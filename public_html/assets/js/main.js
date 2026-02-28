@@ -24,12 +24,12 @@ if (!loggedInUser) {
 
     const menus = [
         // Kategori 1: Strategy & Overview
-        { id: 'portfolio', icon: 'globe', label: 'Global Portfolio', roles: ['Super Admin'], category: 'Strategy & Overview' },
+        { id: 'portfolio', icon: 'globe', label: 'Global Portfolio', roles: ['Super Admin', 'Developer'], category: 'Strategy & Overview' },
         { id: 'client-management', icon: 'building-2', label: 'Client Management', roles: ['Super Admin'], category: 'Strategy & Overview' },
         
         // Kategori 2: Operational Area
         { id: 'pipeline', icon: 'layout-dashboard', label: 'Lead & Pipeline', roles: ['All'], category: 'Operational Area' },
-        { id: 'reminder-followup', icon: 'bell-ring', label: 'Reminder Followup', roles: ['Admin Marketing/CS', 'Agent Freelance'], category: 'Operational Area' },
+        { id: 'reminder-followup', icon: 'bell-ring', label: 'Reminder Followup', roles: ['Admin CS', 'Agent Freelance', 'Super Admin'], category: 'Operational Area' },
         { id: 'reporting', icon: 'file-bar-chart', label: 'Weekly Report', roles: ['Developer', 'Admin CS', 'Super Admin'], category: 'Operational Area' },
         
         // Kategori 3: Productivity Tools
