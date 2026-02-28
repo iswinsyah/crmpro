@@ -79,7 +79,7 @@ if (!loggedInUser) {
     async function refreshData() {
         try {
             // Kirim user_id yang sedang login ke API
-            state.leads = await ApiService.getLeads(state.currentUser.id);
+            state.leads = await ApiService.getLeads(state.currentUser.id, state.currentRole);
         } catch (error) {
             console.error("Gagal memuat data:", error);
             ui.showToast("Gagal memuat data leads", "error");
@@ -169,7 +169,7 @@ if (!loggedInUser) {
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData.entries());
 
-                await ApiService.createLead(data);
+                await ApiService.createLead(data, state.currentUser.id);
                 
                 ui.showToast("Lead berhasil didaftarkan!");
                 ui.closeModal('addLeadModal');

@@ -13,9 +13,9 @@ export class ApiService {
         return await response.json();
     }
 
-    static async getLeads(userId) {
+    static async getLeads(userId, role) { // Role might be useful for caching/logging, though backend decides
         try {
-            const url = `${API_BASE_URL}/get_leads.php?user_id=${encodeURIComponent(userId)}`;
+            const url = `${API_BASE_URL}/leads.php?action=list&user_id=${encodeURIComponent(userId)}`;
             const response = await fetch(url);
             return await this.handleResponse(response);
         } catch (error) {
@@ -24,12 +24,13 @@ export class ApiService {
         }
     }
 
-    static async createLead(leadData) {
+    static async createLead(leadData, userId) {
         try {
             const formData = new FormData();
             for (const key in leadData) {
                 formData.append(key, leadData[key]);
             }
+            formData.append('user_id', userId); // Tambahkan ID user yang sedang login
 
             const response = await fetch(`${API_BASE_URL}/leads.php?action=create`, {
                 method: 'POST',

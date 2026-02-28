@@ -11,14 +11,12 @@ export class PipelineComponent {
     render() {
         if (!this.container) return;
         
-        const visibleLeads = (this.state.currentRole === 'Developer' || this.state.currentRole === 'Super Admin/Consultant') 
-                             ? this.state.leads 
-                             : this.state.leads.filter(l => l.owner === 'Self');
-
+        // Backend sudah memfilter data, frontend hanya perlu menampilkan
+        const visibleLeads = this.state.leads;
         this.container.innerHTML = '';
 
         this.statuses.forEach(status => {
-            const colLeads = visibleLeads.filter(l => l.status === status);
+            const colLeads = visibleLeads.filter(l => l.status === status) || [];
             
             const colDiv = document.createElement('div');
             colDiv.className = "bg-slate-200/50 rounded-[1.5rem] md:rounded-[2rem] border border-slate-200 flex flex-col min-h-[400px] md:min-h-[500px] w-[85vw] md:w-auto shrink-0 md:flex-1 snap-center";
