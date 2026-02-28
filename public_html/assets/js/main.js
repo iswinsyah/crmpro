@@ -6,6 +6,9 @@ import { ReportingComponent } from './components/reporting.js';
 import { ClientManagementComponent } from './components/client_management.js';
 import { ReminderFollowupComponent } from './components/reminder.js';
 import { LeadAnalyzerComponent, CreativeSuiteComponent, ObjectionGenComponent, PersonaInsightComponent, AiEngineConfigComponent } from './components/ai_features.js';
+import { TasksComponent } from './components/tasks.js';
+import { CalendarComponent } from './components/calendar.js';
+import { SettingsComponent } from './components/settings.js';
 
 const state = {
     currentRole: 'Super Admin/Consultant',
@@ -23,14 +26,19 @@ const menus = [
     { id: 'reminder-followup', icon: 'bell-ring', label: 'Reminder Followup', roles: ['Admin Marketing/CS', 'Agent Freelance'], category: 'Operational Area' },
     { id: 'reporting', icon: 'file-bar-chart', label: 'Weekly Report', roles: ['Admin Developer', 'Admin Marketing/CS', 'Super Admin/Consultant'], category: 'Operational Area' },
     
-    // Kategori 3: AI Assistants
+    // Kategori 3: Productivity Tools
+    { id: 'tasks', icon: 'check-square', label: 'Task Management', roles: ['All'], category: 'Productivity Tools' },
+    { id: 'calendar', icon: 'calendar', label: 'Calendar', roles: ['All'], category: 'Productivity Tools' },
+
+    // Kategori 4: AI Assistants
     { id: 'ai-lead', icon: 'brain-circuit', label: 'Lead Analyzer', roles: ['All'], category: 'AI Assistants' },
     { id: 'ai-creative', icon: 'sparkles', label: 'Creative Suite', roles: ['All'], category: 'AI Assistants' },
     { id: 'ai-objection', icon: 'shield-alert', label: 'Objection Gen', roles: ['All'], category: 'AI Assistants' },
     
-    // Kategori 4: Strategy & Setup
+    // Kategori 5: Strategy & Setup
     { id: 'persona', icon: 'user-check', label: 'Persona Insight', roles: ['Admin Developer', 'Admin Marketing/CS', 'Super Admin/Consultant'], category: 'Strategy & Setup' },
     { id: 'ai-engine', icon: 'database', label: 'AI Engine Config', roles: ['Admin Developer', 'Super Admin/Consultant'], category: 'Strategy & Setup' },
+    { id: 'settings', icon: 'settings', label: 'Settings', roles: ['Developer', 'Super Admin/Consultant'], category: 'Strategy & Setup' },
 ];
 
 const ui = new UI();
@@ -44,6 +52,9 @@ let creativeSuiteComponent = null;
 let objectionGenComponent = null;
 let personaInsightComponent = null;
 let aiEngineConfigComponent = null;
+let tasksComponent = null;
+let calendarComponent = null;
+let settingsComponent = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("MCS Master: Memulai aplikasi...");
@@ -205,6 +216,18 @@ function switchTab(tabId) {
         mainContent.innerHTML = `<section id="tab-ai-engine" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
         aiEngineConfigComponent = new AiEngineConfigComponent('tab-ai-engine');
         aiEngineConfigComponent.render();
+    } else if (tabId === 'tasks') {
+        mainContent.innerHTML = `<section id="tab-tasks" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
+        tasksComponent = new TasksComponent('tab-tasks');
+        tasksComponent.render();
+    } else if (tabId === 'calendar') {
+        mainContent.innerHTML = `<section id="tab-calendar" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
+        calendarComponent = new CalendarComponent('tab-calendar');
+        calendarComponent.render();
+    } else if (tabId === 'settings') {
+        mainContent.innerHTML = `<section id="tab-settings" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
+        settingsComponent = new SettingsComponent('tab-settings');
+        settingsComponent.render();
     } else {
         mainContent.innerHTML = `<div class="p-10 text-center text-slate-400">Modul ${tabId} belum dimigrasi.</div>`;
     }
