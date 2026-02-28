@@ -58,4 +58,18 @@ export class ApiService {
             throw error;
         }
     }
+
+    static async generateAIContent(prompt) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/gemini.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt })
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (generateAIContent):", error);
+            throw error;
+        }
+    }
 }

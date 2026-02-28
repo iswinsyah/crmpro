@@ -1,3 +1,5 @@
+import { ApiService } from '../api.js';
+
 /**
  * Kumpulan Komponen AI & Fitur Canggih
  */
@@ -23,27 +25,44 @@ export class LeadAnalyzerComponent {
         this.container.querySelector('#btn-analyze').addEventListener('click', () => this.analyze());
         if(window.lucide) window.lucide.createIcons();
     }
-    analyze() {
+    async analyze() {
         const btn = this.container.querySelector('#btn-analyze');
         const res = this.container.querySelector('#analyzer-result');
         const input = this.container.querySelector('#analyzer-input').value;
         if(!input) return alert('Masukkan teks chat dulu bos!');
         
-        btn.innerText = "Processing via API...";
+        const originalText = btn.innerText;
+        btn.innerText = "Sedang Menganalisa...";
+        btn.disabled = true;
         res.classList.add('hidden');
-        setTimeout(() => {
+
+        try {
+            const prompt = `Analisa percakapan chat prospek properti berikut. Tentukan skor "Suhu Prospek" (0-100%), Label (HOT/WARM/COLD), dan berikan 1 kalimat saran tindakan singkat. Format output JSON: {"score": "85%", "label": "HOT LEAD", "advice": "Saran..."}. Chat: "${input}"`;
+            
+            // Panggil API Gemini via Backend
+            const response = await ApiService.generateAIContent(prompt);
+            
+            // Parsing hasil (Gemini kadang mengembalikan markdown json, kita bersihkan)
+            let cleanJson = response.result.replace(/```json|```/g, '').trim();
+            let data = { score: "N/A", label: "UNKNOWN", advice: response.result };
+            try { data = JSON.parse(cleanJson); } catch(e) { console.log("Raw AI response:", response.result); }
+
             res.innerHTML = `
                 <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border text-center shadow-sm">
-                    <p class="text-3xl md:text-4xl font-black text-teal-600">85%</p>
-                    <p class="text-[9px] md:text-[10px] font-black text-orange-600 uppercase tracking-widest mt-2">HOT LEAD</p>
+                    <p class="text-3xl md:text-4xl font-black text-teal-600">${data.score || 'N/A'}</p>
+                    <p class="text-[9px] md:text-[10px] font-black text-orange-600 uppercase tracking-widest mt-2">${data.label || 'ANALYSIS DONE'}</p>
                 </div>
                 <div class="bg-slate-900 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-white italic text-[10px] md:text-xs leading-relaxed flex items-center shadow-xl">
-                    "Prospek tertarik tapi butuh kepastian legalitas. Segera kirim bukti PBG/Sertifikat."
+                    "${data.advice || response.result}"
                 </div>
             `;
             res.classList.remove('hidden');
-            btn.innerText = "Analisa Suhu Prospek";
-        }, 1500);
+        } catch (error) {
+            alert("Gagal analisa AI: " + error.message);
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
     }
 }
 
@@ -100,23 +119,33 @@ export class CreativeSuiteComponent {
         });
         if(window.lucide) window.lucide.createIcons();
     }
-    generate() {
+    async generate() {
         const btn = this.container.querySelector('#btn-generate-creative');
         const res = this.container.querySelector('#creative-result');
+        const input = this.container.querySelector('textarea').value;
+        
+        const originalText = btn.innerText;
         btn.innerText = "Processing AI...";
+        btn.disabled = true;
         res.innerHTML = `<div class="animate-pulse flex flex-col items-center"><i data-lucide="cpu" class="w-8 h-8 text-teal-400 mb-3"></i><p class="text-[10px] font-black uppercase tracking-widest">Merangkai...</p></div>`;
         if(window.lucide) window.lucide.createIcons();
         
-        setTimeout(() => {
-            let output = "";
-            if (this.mode === 'text') output = "✨ COPYWRITING SYARIAH ✨\n\nHeadline: Rumah Idaman Tanpa Riba!\n\nIngin punya hunian berkah tanpa rasa was-was sita atau denda? Hadir di lokasi strategis dengan sistem syariah murni!";
-            else if (this.mode === 'visual') output = "🖼️ KONSEP CAROUSEL:\n\n- Slide 1: 'Ciri Developer Bodong'.\n- Slide 2: Edukasi Legalitas.\n- Slide 3: Solusi Perumahan Kita.";
-            else output = "🎬 SCRIPT TIKTOK:\n\n[Hook]: 'Capek cicilan riba?'\n[Body]: 'Kenalin sistem syariah murni. Gak pake Bank, gak pake denda, apalagi sita!'";
+        try {
+            let prompt = `Buatkan konten kreatif untuk properti syariah. Mode: ${this.mode}. Konteks tambahan: ${input || 'Umum'}.`;
+            if (this.mode === 'text') prompt += " Buat Copywriting Headline & Body yang persuasif.";
+            else if (this.mode === 'visual') prompt += " Buat ide visual/gambar untuk carousel Instagram.";
+            else prompt += " Buat naskah video pendek (TikTok/Reels) lengkap dengan Hook.";
+
+            const response = await ApiService.generateAIContent(prompt);
             
-            res.innerHTML = `<div class="w-full h-full bg-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl text-[10px] md:text-xs text-slate-200 leading-relaxed font-mono whitespace-pre-wrap border border-white/5 text-left custom-scrollbar overflow-y-auto">${output}</div>`;
+            res.innerHTML = `<div class="w-full h-full bg-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl text-[10px] md:text-xs text-slate-200 leading-relaxed font-mono whitespace-pre-wrap border border-white/5 text-left custom-scrollbar overflow-y-auto">${response.result}</div>`;
             res.classList.remove('opacity-30');
-            btn.innerText = "Generate Konten Kreatif";
-        }, 1200);
+        } catch (error) {
+            res.innerHTML = `<div class="text-red-400 text-xs">Error: ${error.message}</div>`;
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
     }
 }
 
@@ -152,14 +181,24 @@ export class ObjectionGenComponent {
             <p class="text-[10px] md:text-[11px] font-bold text-slate-700 italic">"${text}"</p>
         </button>`;
     }
-    handle(type) {
-        const answers = {
-            mahal: "Pahami Bos, sampaikan: 'Betul Pak, kualitas bangunan premium tanpa bunga siluman yang bikin KPR Bank jauh lebih mahal.'",
-            legal: "Sampaikan: 'Legalitas adalah prioritas kami. Sertifikat sudah pecah dan IMB (PBG) sudah tersedia.'",
-            jauh: "Sampaikan: 'Area ini adalah sunrise property. 5 tahun lagi harga berlipat ganda karena akses tol.'",
-            bank: "Sampaikan: 'Justru tanpa Bank adalah perlindungan untuk Bapak dari Riba dan Denda.'"
+    async handle(type) {
+        const objectionMap = {
+            mahal: "Harganya kemahalan pak...",
+            legal: "Gimana legalitasnya, aman?",
+            jauh: "Lokasinya kok jauh ya?",
+            bank: "Saya biasanya pake KPR Bank..."
         };
-        this.container.querySelector('#objection-text').innerText = answers[type];
+        
+        const container = this.container.querySelector('#objection-text');
+        container.innerText = "Sedang meramu jawaban taktis...";
+        
+        try {
+            const prompt = `Berikan script jawaban sales properti syariah yang taktis, sopan, dan persuasif untuk menangani keberatan prospek: "${objectionMap[type]}". Jawaban harus singkat (max 2 kalimat) dan menekankan value syariah/investasi.`;
+            const response = await ApiService.generateAIContent(prompt);
+            container.innerText = response.result;
+        } catch (error) {
+            container.innerText = "Gagal memuat AI.";
+        }
     }
 }
 
