@@ -6,6 +6,9 @@ header("Access-Control-Allow-Methods: GET");
 
 require_once 'db_connect_pdo.php';
 
+if (!isset($_GET['user_id']) || empty($_GET['user_id'])) {
+    http_response_code(401);
+    echo json_encode(["message" => "Akses ditolak: Sesi tidak valid."]);
     exit;
 }
 $user_id = $_GET['user_id']; 
