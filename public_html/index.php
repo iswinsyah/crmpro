@@ -60,10 +60,9 @@
                     </h2>
                 </div>
                 <div class="flex space-x-2 md:space-x-3 shrink-0">
-                    <button id="btn-toggle-role" class="bg-indigo-50 text-indigo-700 border border-indigo-100 px-3 md:px-4 py-2 rounded-xl text-[9px] font-black uppercase shadow-sm flex items-center transition-all active:scale-95 hover:bg-indigo-100">
-                        <i data-lucide="refresh-cw" class="w-3 h-3 md:mr-2"></i> 
-                        <span class="hidden md:inline">Role: </span> 
-                        <span id="header-role-text" class="ml-1 hidden sm:inline">Super Admin</span>
+                    <button id="btn-logout" class="bg-red-50 text-red-700 border border-red-100 px-3 md:px-4 py-2 rounded-xl text-[9px] font-black uppercase shadow-sm flex items-center transition-all active:scale-95 hover:bg-red-100">
+                        <i data-lucide="log-out" class="w-3 h-3 md:mr-2"></i> 
+                        <span id="header-role-text" class="hidden sm:inline">Nama User</span>
                     </button>
                     <button id="btn-add-lead" class="bg-orange-500 text-white px-3 md:px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg active:scale-95 hover:bg-orange-600 transition-all">
                         <span class="md:hidden"><i data-lucide="plus" class="w-3 h-3"></i></span>

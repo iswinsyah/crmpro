@@ -13,9 +13,9 @@ export class ApiService {
         return await response.json();
     }
 
-    static async getLeads(role, userId) {
+    static async getLeads(userId) {
         try {
-            const url = `${API_BASE_URL}/leads.php?action=list&role=${encodeURIComponent(role)}&user_id=${encodeURIComponent(userId)}`;
+            const url = `${API_BASE_URL}/get_leads.php?user_id=${encodeURIComponent(userId)}`;
             const response = await fetch(url);
             return await this.handleResponse(response);
         } catch (error) {
@@ -69,6 +69,43 @@ export class ApiService {
             return await this.handleResponse(response);
         } catch (error) {
             console.error("API Error (generateAIContent):", error);
+            throw error;
+        }
+    }
+
+    static async login(username, password) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async getDevelopers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/get_developers.php`);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (getDevelopers):", error);
+            throw error;
+        }
+    }
+
+    static async signup(userData) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/signup.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (signup):", error);
             throw error;
         }
     }

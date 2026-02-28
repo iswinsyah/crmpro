@@ -10,21 +10,28 @@ import { TasksComponent } from './components/tasks.js';
 import { CalendarComponent } from './components/calendar.js';
 import { SettingsComponent } from './components/settings.js';
 
+// --- Cek Sesi Login ---
+const loggedInUser = JSON.parse(localStorage.getItem('mgo_user'));
+if (!loggedInUser) {
+    window.location.href = 'login.html';
+}
+
 const state = {
-    currentRole: 'Super Admin/Consultant',
+    currentUser: loggedInUser,
+    currentRole: loggedInUser.role, // Ambil role dari data login
     currentTab: 'pipeline',
     leads: []
 };
 
 const menus = [
     // Kategori 1: Strategy & Overview
-    { id: 'portfolio', icon: 'globe', label: 'Global Portfolio', roles: ['Super Admin/Consultant', 'Developer'], category: 'Strategy & Overview' },
-    { id: 'client-management', icon: 'building-2', label: 'Client Management', roles: ['Super Admin/Consultant'], category: 'Strategy & Overview' },
+    { id: 'portfolio', icon: 'globe', label: 'Global Portfolio', roles: ['Super Admin'], category: 'Strategy & Overview' },
+    { id: 'client-management', icon: 'building-2', label: 'Client Management', roles: ['Super Admin'], category: 'Strategy & Overview' },
     
     // Kategori 2: Operational Area
     { id: 'pipeline', icon: 'layout-dashboard', label: 'Lead & Pipeline', roles: ['All'], category: 'Operational Area' },
     { id: 'reminder-followup', icon: 'bell-ring', label: 'Reminder Followup', roles: ['Admin Marketing/CS', 'Agent Freelance'], category: 'Operational Area' },
-    { id: 'reporting', icon: 'file-bar-chart', label: 'Weekly Report', roles: ['Admin Developer', 'Admin Marketing/CS', 'Super Admin/Consultant'], category: 'Operational Area' },
+    { id: 'reporting', icon: 'file-bar-chart', label: 'Weekly Report', roles: ['Developer', 'Admin CS', 'Super Admin'], category: 'Operational Area' },
     
     // Kategori 3: Productivity Tools
     { id: 'tasks', icon: 'check-square', label: 'Task Management', roles: ['All'], category: 'Productivity Tools' },
@@ -36,9 +43,9 @@ const menus = [
     { id: 'ai-objection', icon: 'shield-alert', label: 'Objection Gen', roles: ['All'], category: 'AI Assistants' },
     
     // Kategori 5: Strategy & Setup
-    { id: 'persona', icon: 'user-check', label: 'Persona Insight', roles: ['Admin Developer', 'Admin Marketing/CS', 'Super Admin/Consultant'], category: 'Strategy & Setup' },
-    { id: 'ai-engine', icon: 'database', label: 'AI Engine Config', roles: ['Admin Developer', 'Super Admin/Consultant'], category: 'Strategy & Setup' },
-    { id: 'settings', icon: 'settings', label: 'Settings', roles: ['Developer', 'Super Admin/Consultant'], category: 'Strategy & Setup' },
+    { id: 'persona', icon: 'user-check', label: 'Persona Insight', roles: ['Developer', 'Admin CS', 'Super Admin'], category: 'Strategy & Setup' },
+    { id: 'ai-engine', icon: 'database', label: 'AI Engine Config', roles: ['Developer', 'Super Admin'], category: 'Strategy & Setup' },
+    { id: 'settings', icon: 'settings', label: 'Settings', roles: ['Developer', 'Super Admin'], category: 'Strategy & Setup' },
 ];
 
 const ui = new UI();
@@ -57,6 +64,7 @@ let calendarComponent = null;
 let settingsComponent = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+    setupUserUI();
     console.log("MCS Master: Memulai aplikasi...");
     try {
         setupEventListeners();
@@ -71,7 +79,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function refreshData() {
     try {
-        state.leads = await ApiService.getLeads(state.currentRole, 'user_session_id');
+        // Kirim user_id yang sedang login ke API
+        state.leads = await ApiService.getLeads(state.currentUser.id);
     } catch (error) {
         console.error("Gagal memuat data:", error);
         ui.showToast("Gagal memuat data leads", "error");
@@ -82,7 +91,7 @@ function setupEventListeners() {
     document.getElementById('btn-open-sidebar').addEventListener('click', () => ui.toggleSidebar(true));
     document.getElementById('btn-close-sidebar').addEventListener('click', () => ui.toggleSidebar(false));
     document.getElementById('mobile-overlay').addEventListener('click', () => ui.toggleSidebar(false));
-    document.getElementById('btn-toggle-role').addEventListener('click', toggleRole);
+    document.getElementById('btn-logout').addEventListener('click', logout);
     document.getElementById('btn-add-lead').addEventListener('click', () => {
         injectAddLeadModal();
         ui.openModal('addLeadModal');
@@ -90,6 +99,19 @@ function setupEventListeners() {
     document.addEventListener('lead-selected', (e) => {
         ui.openDrawer(e.detail, state.currentRole);
     });
+}
+
+function setupUserUI() {
+    document.getElementById('role-display').innerText = state.currentUser.role;
+    document.getElementById('role-initial').innerText = state.currentUser.nama.charAt(0);
+    document.getElementById('header-role-text').innerText = state.currentUser.nama;
+}
+
+function logout() {
+    if (confirm('Apakah Anda yakin ingin keluar?')) {
+        localStorage.removeItem('mgo_user');
+        window.location.href = 'login.html';
+    }
 }
 
 function injectAddLeadModal() {
@@ -266,29 +288,4 @@ function renderSidebar() {
     });
 
     if (window.lucide) window.lucide.createIcons();
-}
-
-function toggleRole() {
-    const roles = ['Super Admin/Consultant', 'Developer', 'Admin Marketing/CS', 'Agent Freelance'];
-    let nextIndex = (roles.indexOf(state.currentRole) + 1) % roles.length;
-    state.currentRole = roles[nextIndex];
-
-    document.getElementById('role-display').innerText = state.currentRole;
-    document.getElementById('role-initial').innerText = state.currentRole.charAt(0);
-    
-    let headerText = state.currentRole;
-    if(state.currentRole === 'Super Admin/Consultant') headerText = 'Super Admin';
-    if(state.currentRole === 'Admin Marketing/CS') headerText = 'Admin CS';
-    document.getElementById('header-role-text').innerText = headerText;
-
-    renderSidebar();
-    
-    const activeMenu = menus.find(m => m.id === state.currentTab);
-    if (activeMenu.roles[0] !== 'All' && !activeMenu.roles.includes(state.currentRole)) {
-        switchTab('pipeline');
-    } else {
-        if (state.currentTab === 'pipeline' && pipelineComponent) {
-            pipelineComponent.render();
-        }
-    }
 }

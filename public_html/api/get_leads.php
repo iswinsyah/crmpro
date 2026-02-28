@@ -6,9 +6,9 @@ header("Access-Control-Allow-Methods: GET");
 
 require_once 'db_connect_pdo.php';
 
-// --- SIMULASI SESI LOGIN ---
-// Di aplikasi nyata, ID ini didapat dari JWT Token atau $_SESSION['user_id']
-$user_id = $_GET['user_id'] ?? 1; 
+    exit;
+}
+$user_id = $_GET['user_id']; 
 
 try {
     // 1. Validasi User & Ambil Info Tenant (Developer ID)
