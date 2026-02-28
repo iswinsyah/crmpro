@@ -46,15 +46,15 @@ let personaInsightComponent = null;
 let aiEngineConfigComponent = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log("CRM Pro: Memulai aplikasi via MAIN.JS...");
+    console.log("MCS Master: Memulai aplikasi...");
     try {
         setupEventListeners();
         await refreshData();
         renderSidebar();
         switchTab('pipeline');
-        console.log("CRM Pro: Aplikasi siap digunakan!");
+        console.log("MCS Master: Aplikasi siap digunakan!");
     } catch (error) {
-        console.error("CRM Pro Error:", error);
+        console.error("MCS Master Error:", error);
     }
 });
 

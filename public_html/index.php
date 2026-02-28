@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CRM Pro - Native Web App</title>
+    <title>MCS Master Ultimate - Native Web App</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,7 +25,7 @@
         <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 w-[260px] md:w-64 bg-teal-950 text-white flex flex-col shadow-2xl z-50 transition-transform duration-300 ease-in-out shrink-0">
             <div class="p-6 md:p-8 border-b border-teal-900 text-center flex items-center justify-between md:block">
                 <div class="w-full">
-                    <h1 class="text-xl font-black text-orange-400 tracking-tighter italic">CRM PRO</h1>
+                    <h1 class="text-xl font-black text-orange-400 tracking-tighter italic">MCS MASTER</h1>
                     <p class="text-[9px] text-teal-400 mt-1 uppercase font-bold tracking-[0.2em]">PROPERTY SYARIAH</p>
                 </div>
                 <button id="btn-close-sidebar" class="md:hidden p-2 bg-white/10 rounded-xl hover:bg-white/20">

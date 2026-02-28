@@ -1,7 +1,7 @@
 /**
  * Helper Functions
  */
-console.log("CRM Pro: Helpers module loaded");
+console.log("MCS Master: Helpers module loaded");
 
 export function maskInfo(data, leadOwner, currentRole, type = 'phone') {
     const isAuthorized = currentRole === 'Developer' || 
