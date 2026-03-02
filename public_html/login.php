@@ -24,7 +24,7 @@ try {
 
     if (!$user) {
         http_response_code(401);
-        echo json_encode(["message" => "User tidak ditemukan. Pastikan Anda sudah menjalankan seed_admins.php!"]);
+        echo json_encode(["message" => "DARI FILE BARU: User tidak ditemukan. Jalankan seed_admins.php di browser!"]);
         exit;
     }
 
@@ -39,7 +39,7 @@ try {
         ]);
     } else {
         http_response_code(401); // Unauthorized
-        echo json_encode(["message" => "Password salah. Cek penulisan password Anda."]);
+        echo json_encode(["message" => "DARI FILE BARU: Password salah. Cek penulisan password Anda."]);
     }
 } catch (PDOException $e) {
     http_response_code(500);
