@@ -76,7 +76,7 @@ export class ApiService {
 
     static async login(username, password) {
         try {
-            const response = await fetch(`${API_BASE_URL}/login.php`, { // DIARAHKAN KE FILE BARU
+            const response = await fetch(`${API_BASE_URL}/login.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
