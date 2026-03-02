@@ -1,62 +1,113 @@
-const API_BASE_URL = 'api/';
+/**
+ * API Service Module
+ */
+const API_BASE_URL = '/api'; // Disesuaikan untuk server produksi (Hostinger)
 
-async function handleResponse(response) {
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error(errorData.message || 'Unknown server error');
+export class ApiService {
+    
+    static async handleResponse(response) {
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `HTTP Error: ${response.status}`);
+        }
+        return await response.json();
     }
-    return response.json();
+
+    static async getLeads(userId, role) { // Role might be useful for caching/logging, though backend decides
+        try {
+            const url = `${API_BASE_URL}/leads.php?action=list&user_id=${encodeURIComponent(userId)}`;
+            const response = await fetch(url);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (getLeads):", error);
+            return []; 
+        }
+    }
+
+    static async createLead(leadData, userId) {
+        try {
+            const formData = new FormData();
+            for (const key in leadData) {
+                formData.append(key, leadData[key]);
+            }
+            formData.append('user_id', userId); // Tambahkan ID user yang sedang login
+
+            const response = await fetch(`${API_BASE_URL}/leads.php?action=create`, {
+                method: 'POST',
+                body: formData
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (createLead):", error);
+            throw error;
+        }
+    }
+
+    static async updateLeadStatus(leadId, newStatus) {
+        try {
+            const formData = new FormData();
+            formData.append('id', leadId);
+            formData.append('status', newStatus);
+
+            const response = await fetch(`${API_BASE_URL}/leads.php?action=update_status`, {
+                method: 'POST',
+                body: formData
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (updateLeadStatus):", error);
+            throw error;
+        }
+    }
+
+    static async generateAIContent(prompt) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/gemini.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt })
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (generateAIContent):", error);
+            throw error;
+        }
+    }
+
+    static async login(username, password) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/login.php`, { // DIARAHKAN KE FILE BARU
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async getDevelopers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/get_developers.php`);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (getDevelopers):", error);
+            throw error;
+        }
+    }
+
+    static async signup(userData) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/signup.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (signup):", error);
+            throw error;
+        }
+    }
 }
-
-export const ApiService = {
-    // --- Authentication ---
-    async login(username, password) {
-        const response = await fetch(`${API_BASE_URL}login.php`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        return handleResponse(response);
-    },
-
-    async signup(userData) {
-        const response = await fetch(`${API_BASE_URL}signup.php`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(userData)
-        });
-        return handleResponse(response);
-    },
-
-    // --- Data Fetching ---
-    async getDevelopers() {
-        const response = await fetch(`${API_BASE_URL}get_developers.php`);
-        return handleResponse(response);
-    },
-
-    async getLeads(userId) {
-        const response = await fetch(`${API_BASE_URL}leads.php?action=list&user_id=${userId}`);
-        return handleResponse(response);
-    },
-
-    // --- Data Mutation ---
-    async createLead(formData) {
-        const response = await fetch(`${API_BASE_URL}leads.php?action=create`, {
-            method: 'POST',
-            body: formData
-        });
-        return handleResponse(response);
-    },
-
-    async updateLeadStatus(id, status) {
-        const formData = new FormData();
-        formData.append('id', id);
-        formData.append('status', status);
-        
-        const response = await fetch(`${API_BASE_URL}leads.php?action=update_status`, {
-            method: 'POST',
-            body: formData
-        });
-        return handleResponse(response);
-    },
-};
