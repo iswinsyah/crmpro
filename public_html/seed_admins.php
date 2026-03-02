@@ -21,6 +21,7 @@ $admins = [
 // ------------------------------------
 
 echo "<h1>Memulai Pendaftaran Super Admin...</h1>";
+echo "<h3 style='color: purple;'>VERSI BARU: FITUR RESET PASSWORD AKTIF</h3>";
 
 $sql = "INSERT INTO users (username, nama_user, password, role) VALUES (:username, :nama_user, :password, :role)";
 $stmt = $pdo->prepare($sql);
