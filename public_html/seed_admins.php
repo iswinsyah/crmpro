@@ -1,18 +1,13 @@
 <?php
 // PENTING: HAPUS FILE INI SETELAH SELESAI DIGUNAKAN!
 
-// Coba load koneksi database
-if (file_exists(__DIR__ . '/api/db_connect_pdo.php')) {
-    require_once __DIR__ . '/api/db_connect_pdo.php';
-} else {
-    require_once __DIR__ . '/db_connect_pdo.php';
-}
+require_once __DIR__ . '/api/db_connect_pdo.php';
 
 // --- EDIT DATA ADMIN DI BAWAH INI ---
 $admins = [
     [
         'username' => 'winsyah', // Ganti dengan username Anda
-        'password' => 'Khilafet@1924', // Password Anda
+        'password' => 'Khilafet@1924', // Password Anda (Pastikan sama persis)
         'role' => 'Super Admin'
     ],
     [

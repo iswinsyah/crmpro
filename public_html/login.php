@@ -7,8 +7,8 @@ header("Access-Control-Allow-Methods: POST");
 require_once 'db_connect_pdo.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
-$username = trim($data['username'] ?? ''); // Hapus spasi depan/belakang
-$password = trim($data['password'] ?? ''); // Hapus spasi depan/belakang
+$username = trim($data['username'] ?? ''); 
+$password = trim($data['password'] ?? ''); 
 
 if (empty($username) || empty($password)) {
     http_response_code(400);
@@ -24,7 +24,7 @@ try {
 
     if (!$user) {
         http_response_code(401);
-        echo json_encode(["message" => "User tidak ditemukan. Pastikan Anda sudah menjalankan seed_admins.php di browser!"]);
+        echo json_encode(["message" => "User tidak ditemukan. Pastikan Anda sudah menjalankan seed_admins.php!"]);
         exit;
     }
 
@@ -39,11 +39,11 @@ try {
         ]);
     } else {
         http_response_code(401); // Unauthorized
-        echo json_encode(["message" => "Password salah. Cek Capslock atau ketikan Anda."]);
+        echo json_encode(["message" => "Password salah. Cek penulisan password Anda."]);
     }
 } catch (PDOException $e) {
     http_response_code(500);
-    // Log error asli di server, tampilkan pesan umum ke user
-    echo json_encode(["message" => "Database Error: Gagal memproses login."]);
+    // Log error asli di server
+    echo json_encode(["message" => "Database Error: " . $e->getMessage()]);
 }
 ?>
