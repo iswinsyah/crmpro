@@ -10,12 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (input.type === 'password') {
             input.type = 'text';
-            iconEye.classList.add('hidden');
-            iconEyeSlash.classList.remove('hidden');
+            if (iconEye) iconEye.classList.add('hidden');
+            if (iconEyeSlash) iconEyeSlash.classList.remove('hidden');
         } else {
             input.type = 'password';
-            iconEye.classList.remove('hidden');
-            iconEyeSlash.classList.add('hidden');
+            if (iconEye) iconEye.classList.remove('hidden');
+            if (iconEyeSlash) iconEyeSlash.classList.add('hidden');
         }
     });
 });
