@@ -1,5 +1,6 @@
-# Abaikan file konfigurasi yang berisi kredensial
-public_html/api/db_connect.php
-
-# Abaikan folder vendor jika menggunakan Composer nanti
-/vendor
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+node_modules/

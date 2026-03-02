@@ -79,7 +79,9 @@
         <div id="drawer-container"></div>
 
     </div>
-
+    <script>
+        lucide.createIcons();
+    </script>
     <script type="module" src="assets/js/main.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
