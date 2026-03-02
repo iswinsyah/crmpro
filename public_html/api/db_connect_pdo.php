@@ -4,7 +4,7 @@
 
 $host = 'localhost';
 $db   = 'u829486010_crmpro'; // Ganti dengan nama database Hostinger Anda
-$user = 'u829486010_crmpro';   // Ganti dengan user database Anda
+$user = 'u829486010_user';   // Ganti dengan user database Anda
 $pass = 'Khilafet@1924';    // Ganti dengan password database Anda
 $charset = 'utf8mb4';
 
