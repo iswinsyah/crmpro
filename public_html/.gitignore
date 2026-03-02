@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 .vscode/
 .idea/
 *.log
 .DS_Store
 Thumbs.db
 node_modules/
+=======
+# Abaikan file konfigurasi yang berisi kredensial
+public_html/api/db_connect.php
+
+# Abaikan folder vendor jika menggunakan Composer nanti
+/vendor
+>>>>>>> 7c8ece7e1055ceace8c2b35fe85b10845177b89a
