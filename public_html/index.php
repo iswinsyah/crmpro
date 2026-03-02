@@ -43,9 +43,6 @@
                         <p id="role-display" class="text-teal-400 text-[8px] uppercase font-black italic truncate">Super Admin</p>
                     </div>
                 </div>
-                <button id="btn-logout-sidebar" class="w-full mt-2 py-2 bg-red-900/20 text-red-400 border border-red-900/30 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all flex items-center justify-center group">
-                    <i data-lucide="log-out" class="w-3 h-3 mr-2 group-hover:scale-110 transition-transform"></i> Keluar
-                </button>
             </div>
         </aside>
 
@@ -84,24 +81,6 @@
     </div>
     <script>
         lucide.createIcons();
-
-        // Script Logout Sederhana
-        document.addEventListener('DOMContentLoaded', () => {
-            const handleLogout = () => {
-                if(confirm('Apakah Anda yakin ingin keluar?')) {
-                    localStorage.removeItem('mgo_user'); // Hapus sesi dari browser
-                    window.location.href = 'login.html'; // Tendang ke halaman login
-                }
-            };
-
-            // Pasang fungsi logout di tombol Header (atas)
-            const btnHeader = document.getElementById('btn-logout');
-            if(btnHeader) btnHeader.addEventListener('click', handleLogout);
-
-            // Pasang fungsi logout di tombol Sidebar (samping)
-            const btnSidebar = document.getElementById('btn-logout-sidebar');
-            if(btnSidebar) btnSidebar.addEventListener('click', handleLogout);
-        });
     </script>
     <script type="module" src="assets/js/main.js?v=<?php echo time(); ?>"></script>
 </body>
