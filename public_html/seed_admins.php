@@ -1,0 +1,42 @@
+<?php
+// PENTING: HAPUS FILE INI SETELAH SELESAI DIGUNAKAN!
+
+require __DIR__ . '/api/db_connect_pdo.php';
+
+// --- EDIT DATA ADMIN DI BAWAH INI ---
+$admins = [
+    [
+        'username' => 'winsyah', // Ganti dengan username Anda
+        'password' => 'Khilafet@1924!', // GANTI dengan password Anda yang kuat
+        'role' => 'Super Admin'
+    ],
+    [
+        'username' => 'civic', // Ganti dengan username teman Anda
+        'password' => '12345678', // GANTI dengan password teman Anda
+        'role' => 'Super Admin'
+    ]
+];
+// ------------------------------------
+
+echo "<h1>Memulai Pendaftaran Super Admin...</h1>";
+
+$sql = "INSERT INTO users (username, password, role) VALUES (:username, :password, :role)";
+$stmt = $pdo->prepare($sql);
+
+foreach ($admins as $admin) {
+    $checkStmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
+    $checkStmt->execute(['username' => $admin['username']]);
+    if ($checkStmt->fetch()) {
+        echo "<p style='color: orange;'>User '{$admin['username']}' sudah ada, pendaftaran dilewati.</p>";
+        continue;
+    }
+
+    $hashed_password = password_hash($admin['password'], PASSWORD_DEFAULT);
+
+    $stmt->execute(['username' => $admin['username'], 'password' => $hashed_password, 'role' => $admin['role']]);
+    echo "<p style='color: green;'>User '{$admin['username']}' berhasil didaftarkan sebagai Super Admin!</p>";
+}
+
+echo "<h2>Proses Selesai.</h2>";
+echo "<p style='color:red; font-weight:bold;'>SANGAT PENTING: Segera HAPUS file ini (seed_admins.php) dari server Anda sekarang juga demi keamanan!</p>";
+?>
