@@ -31,7 +31,7 @@ $stmt = $pdo->prepare($sql);
 foreach ($admins as $admin) {
     $checkStmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
     $checkStmt->execute(['username' => $admin['username']]);
-    $hashed_password = password_hash($admin['password'], PASSWORD_DEFAULT);
+    $hashed_password = password_hash(trim($admin['password']), PASSWORD_DEFAULT); // Trim password sebelum hash
 
     if ($checkStmt->fetch()) {
         // Update jika user sudah ada (untuk reset password)

@@ -7,8 +7,8 @@ header("Access-Control-Allow-Methods: POST");
 require_once 'db_connect_pdo.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
-$username = $data['username'] ?? '';
-$password = $data['password'] ?? '';
+$username = trim($data['username'] ?? ''); // Hapus spasi depan/belakang
+$password = trim($data['password'] ?? ''); // Hapus spasi depan/belakang
 
 if (empty($username) || empty($password)) {
     http_response_code(400);
@@ -22,8 +22,14 @@ try {
     $stmt->execute(['username' => $username]);
     $user = $stmt->fetch();
 
+    if (!$user) {
+        http_response_code(401);
+        echo json_encode(["message" => "User tidak ditemukan. Pastikan Anda sudah menjalankan seed_admins.php di browser!"]);
+        exit;
+    }
+
     // Verifikasi password
-    if ($user && password_verify($password, $user['password'])) {
+    if (password_verify($password, $user['password'])) {
         // Hapus password dari respons agar aman
         unset($user['password']);
         
@@ -33,7 +39,7 @@ try {
         ]);
     } else {
         http_response_code(401); // Unauthorized
-        echo json_encode(["message" => "Username atau Password salah"]);
+        echo json_encode(["message" => "Password salah. Cek Capslock atau ketikan Anda."]);
     }
 } catch (PDOException $e) {
     http_response_code(500);
