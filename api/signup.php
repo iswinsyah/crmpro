@@ -12,10 +12,17 @@ $nama_user = $data['nama_user'] ?? '';
 $developer_id = $data['developer_id'] ?? '';
 $username = $data['username'] ?? '';
 $password = $data['password'] ?? '';
-// Untuk keamanan, role pendaftaran publik di-hardcode menjadi 'Agent Freelance'
-$role = 'Agent Freelance'; 
+$role = $data['role'] ?? 'Agent Freelance'; // Ambil role dari input, default ke Agent
 
-if (empty($nama_user) || empty($developer_id) || empty($username) || empty($password)) {
+// Validasi Role yang Diizinkan untuk Pendaftaran Publik
+$allowed_roles = ['Admin CS', 'Agent Freelance'];
+if (!in_array($role, $allowed_roles)) {
+    http_response_code(400);
+    echo json_encode(["message" => "Role tidak valid untuk pendaftaran publik."]);
+    exit;
+}
+
+if (empty($nama_user) || empty($developer_id) || empty($username) || empty($password) || empty($role)) {
     http_response_code(400);
     echo json_encode(["message" => "Semua field wajib diisi"]);
     exit;

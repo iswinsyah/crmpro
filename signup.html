@@ -11,17 +11,24 @@
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 md:p-12">
         <div class="text-center mb-8">
             <h1 class="text-2xl font-black text-orange-500 tracking-tighter italic">MCS MASTER</h1>
-            <p class="text-sm text-slate-500 mt-1">Buat Akun Agen Baru</p>
+            <p class="text-sm text-slate-500 mt-1">Bergabung dengan Tim Penjualan Terbaik</p>
         </div>
-        <form id="signup-form" class="space-y-5">
+        <form id="signup-form" class="space-y-4">
             <div>
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nama Lengkap</label>
                 <input type="text" name="nama_user" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
             </div>
             <div>
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pilih Perusahaan Anda</label>
-                <select name="developer_id" id="developer-select" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
-                    <option value="">Memuat perusahaan...</option>
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Perusahaan (Developer)</label>
+                <select id="developer-select" name="developer_id" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
+                    <option value="">Memuat data...</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Posisi / Role</label>
+                <select name="role" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
+                    <option value="Agent Freelance">Agent Freelance</option>
+                    <option value="Admin CS">Admin CS</option>
                 </select>
             </div>
             <div>
@@ -30,7 +37,6 @@
             </div>
             <div>
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Password</label>
-                <!-- Input password dengan tombol mata -->
                 <div class="relative">
                     <input type="password" name="password" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500 pr-10">
                     <button type="button" class="toggle-password-btn absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-teal-600 focus:outline-none mt-1"><i data-lucide="eye" class="w-5 h-5 icon-eye"></i><i data-lucide="eye-off" class="w-5 h-5 icon-eye-slash hidden"></i></button>
@@ -38,7 +44,7 @@
             </div>
             <div class="pt-4">
                 <button type="submit" id="btn-signup" class="w-full py-4 bg-teal-600 text-white rounded-xl font-black text-sm uppercase tracking-widest shadow-lg hover:bg-teal-700 transition-all active:scale-95">
-                    Daftar
+                    Daftar Sekarang
                 </button>
             </div>
         </form>

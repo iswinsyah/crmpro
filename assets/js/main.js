@@ -101,9 +101,9 @@ if (!loggedInUser) {
     }
 
     function setupUserUI() {
-        document.getElementById('role-display').innerText = state.currentUser.role;
-        document.getElementById('role-initial').innerText = state.currentUser.nama.charAt(0);
-        document.getElementById('header-role-text').innerText = state.currentUser.nama;
+        document.getElementById('role-display').innerText = state.currentUser.role || 'N/A';
+        document.getElementById('role-initial').innerText = state.currentUser.nama_user ? state.currentUser.nama_user.charAt(0) : '?';
+        document.getElementById('header-role-text').innerText = state.currentUser.nama_user || 'User';
     }
 
     function logout() {
@@ -262,7 +262,9 @@ if (!loggedInUser) {
         let lastCategory = '';
 
         menus.forEach(menu => {
-            if (menu.roles[0] !== 'All' && !menu.roles.includes(state.currentRole)) return;
+            // Cek apakah user punya akses ke menu ini
+            const hasAccess = menu.roles.includes('All') || menu.roles.includes(state.currentRole);
+            if (!hasAccess) return;
 
             if (menu.category !== lastCategory) {
                 const catHeader = document.createElement('p');

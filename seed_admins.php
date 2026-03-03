@@ -13,13 +13,13 @@ if (file_exists(__DIR__ . '/api/db_connect_pdo.php')) {
 $admins = [
     [
         'username' => 'winsyah', // Ganti dengan username Anda
-        'nama_user' => 'Winsyah',
-        'password' => 'Khilafet@1924', // Password Baru Anda
+        'nama_user' => 'Winsyah', // Nama Lengkap Anda
+        'password' => 'Khilafet@1924', // Password Anda (Pastikan sama persis)
         'role' => 'Super Admin'
     ],
     [
         'username' => 'civic', // Ganti dengan username teman Anda
-        'nama_user' => 'Civic',
+        'nama_user' => 'Civic', // Nama Lengkap Teman Anda
         'password' => '12345678', // GANTI dengan password teman Anda
         'role' => 'Super Admin'
     ]
