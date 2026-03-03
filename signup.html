@@ -15,21 +15,36 @@
         </div>
         <form id="signup-form" class="space-y-4">
             <div>
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nama Lengkap</label>
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nama Lengkap (Anda)</label>
                 <input type="text" name="nama_user" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
             </div>
             <div>
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Posisi / Role</label>
+                <select name="role" id="role-select" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
+                    <option value="Agent Freelance">Saya ingin bergabung (Agent)</option>
+                    <option value="Admin CS">Saya ingin bergabung (Admin CS)</option>
+                    <option value="Developer">Saya ingin mendaftarkan perusahaan saya</option>
+                </select>
+            </div>
+            <div id="existing-developer-container">
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Perusahaan (Developer)</label>
                 <select id="developer-select" name="developer_id" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
                     <option value="">Memuat data...</option>
                 </select>
             </div>
-            <div>
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Posisi / Role</label>
-                <select name="role" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
-                    <option value="Agent Freelance">Agent Freelance</option>
-                    <option value="Admin CS">Admin CS</option>
-                </select>
+            <div id="new-developer-container" class="hidden space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nama Perusahaan Baru</label>
+                    <input type="text" name="nama_perusahaan" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Alamat Perusahaan</label>
+                    <textarea name="alamat_perusahaan" rows="2" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Kontak Perusahaan</label>
+                    <input type="tel" name="kontak_perusahaan" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-teal-500">
+                </div>
             </div>
             <div>
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Username</label>

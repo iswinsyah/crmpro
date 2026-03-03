@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const developerSelect = document.getElementById('developer-select');
     const signupForm = document.getElementById('signup-form');
     const signupButton = document.getElementById('btn-signup');
+    const roleSelect = document.getElementById('role-select');
+    const existingDeveloperContainer = document.getElementById('existing-developer-container');
+    const newDeveloperContainer = document.getElementById('new-developer-container');
+    const newDeveloperInputs = newDeveloperContainer.querySelectorAll('input, textarea');
+
 
     // 1. Populate Developer List
     try {
@@ -20,7 +25,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Failed to load developers:', error);
     }
 
-    // 2. Handle Form Submission
+    // 2. Handle Role Change to Show/Hide Fields
+    roleSelect.addEventListener('change', (e) => {
+        const selectedRole = e.target.value;
+        if (selectedRole === 'Developer') {
+            // Show new company fields, make them required, hide existing company dropdown
+            existingDeveloperContainer.classList.add('hidden');
+            newDeveloperContainer.classList.remove('hidden');
+            developerSelect.required = false;
+            newDeveloperInputs.forEach(input => input.required = true);
+        } else {
+            // Show existing company dropdown, make it required, hide new company fields
+            existingDeveloperContainer.classList.remove('hidden');
+            newDeveloperContainer.classList.add('hidden');
+            developerSelect.required = true;
+            newDeveloperInputs.forEach(input => input.required = false);
+        }
+    });
+    // Trigger change on load to set initial state correctly
+    roleSelect.dispatchEvent(new Event('change'));
+
+    // 3. Handle Form Submission
     signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const originalButtonText = signupButton.innerHTML;
