@@ -110,4 +110,30 @@ export class ApiService {
             throw error;
         }
     }
+
+    static async getPendingDevelopers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/get_pending_developers.php`);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (getPendingDevelopers):", error);
+            throw error;
+        }
+    }
+
+    static async updateDeveloperStatus(developerId, status) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/update_developer_status.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    developer_id: developerId,
+                    status: status 
+                })
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            throw error;
+        }
+    }
 }

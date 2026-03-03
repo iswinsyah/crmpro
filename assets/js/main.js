@@ -8,6 +8,7 @@ import { ReminderFollowupComponent } from './components/reminder.js';
 import { LeadAnalyzerComponent, CreativeSuiteComponent, ObjectionGenComponent, PersonaInsightComponent, AiEngineConfigComponent } from './components/ai_features.js';
 import { TasksComponent } from './components/tasks.js';
 import { CalendarComponent } from './components/calendar.js';
+import { ValidationComponent } from './components/validation.js';
 import { SettingsComponent } from './components/settings.js';
 
 // --- Cek Sesi Login ---
@@ -25,6 +26,7 @@ if (!loggedInUser) {
     const menus = [
         // Kategori 1: Strategy & Overview
         { id: 'portfolio', icon: 'globe', label: 'Global Portfolio', roles: ['Super Admin', 'Developer'], category: 'Strategy & Overview' },
+        { id: 'validation', icon: 'check-shield', label: 'Validasi Pendaftar', roles: ['Super Admin'], category: 'Strategy & Overview' },
         { id: 'client-management', icon: 'building-2', label: 'Client Management', roles: ['Super Admin'], category: 'Strategy & Overview' },
         
         // Kategori 2: Operational Area
@@ -61,6 +63,7 @@ if (!loggedInUser) {
     let tasksComponent = null;
     let calendarComponent = null;
     let settingsComponent = null;
+    let validationComponent = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
         setupUserUI();
@@ -249,6 +252,10 @@ if (!loggedInUser) {
             mainContent.innerHTML = `<section id="tab-settings" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             settingsComponent = new SettingsComponent('tab-settings');
             settingsComponent.render();
+        } else if (tabId === 'validation') {
+            mainContent.innerHTML = `<section id="tab-validation" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
+            validationComponent = new ValidationComponent('tab-validation');
+            validationComponent.render();
         } else {
             mainContent.innerHTML = `<div class="p-10 text-center text-slate-400">Modul ${tabId} belum dimigrasi.</div>`;
         }

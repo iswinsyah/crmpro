@@ -28,6 +28,12 @@ try {
         exit;
     }
 
+    if ($user['status'] === 'Pending') {
+        http_response_code(403); // Forbidden
+        echo json_encode(["message" => "Akun Anda sedang menunggu validasi dari Super Admin."]);
+        exit;
+    }
+
     // Verifikasi password
     if (password_verify($password, $user['password'])) {
         // Hapus password dari respons agar aman
