@@ -9,6 +9,7 @@ import { LeadAnalyzerComponent, CreativeSuiteComponent, ObjectionGenComponent, P
 import { TasksComponent } from './components/tasks.js';
 import { CalendarComponent } from './components/calendar.js';
 import { ValidationComponent } from './components/validation.js';
+import { MenuManagementComponent } from './components/menu_management.js';
 import { SettingsComponent } from './components/settings.js';
 
 // --- Cek Sesi Login ---
@@ -46,6 +47,7 @@ if (!loggedInUser) {
         // Kategori 5: Strategy & Setup
         { id: 'persona', icon: 'user-check', label: 'Persona Insight', roles: ['Developer', 'Admin CS', 'Super Admin'], category: 'Strategy & Setup' },
         { id: 'ai-engine', icon: 'database', label: 'AI Engine Config', roles: ['Developer', 'Super Admin'], category: 'Strategy & Setup' },
+        { id: 'menu-management', icon: 'list-checks', label: 'Menu Management', roles: ['Super Admin'], category: 'Strategy & Setup' },
         { id: 'settings', icon: 'settings', label: 'Settings', roles: ['Developer', 'Super Admin'], category: 'Strategy & Setup' },
     ];
 
@@ -64,6 +66,7 @@ if (!loggedInUser) {
     let calendarComponent = null;
     let settingsComponent = null;
     let validationComponent = null;
+    let menuManagementComponent = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
         setupUserUI();
@@ -256,6 +259,10 @@ if (!loggedInUser) {
             mainContent.innerHTML = `<section id="tab-validation" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             validationComponent = new ValidationComponent('tab-validation');
             validationComponent.render();
+        } else if (tabId === 'menu-management') {
+            mainContent.innerHTML = `<section id="tab-menu-management" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
+            menuManagementComponent = new MenuManagementComponent('tab-menu-management', menus);
+            menuManagementComponent.render();
         } else {
             mainContent.innerHTML = `<div class="p-10 text-center text-slate-400">Modul ${tabId} belum dimigrasi.</div>`;
         }
