@@ -7,8 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const roleSelect = document.getElementById('role-select');
     const existingDeveloperContainer = document.getElementById('existing-developer-container');
     const newDeveloperContainer = document.getElementById('new-developer-container');
-    const newDeveloperInputs = newDeveloperContainer.querySelectorAll('input, textarea');
-
+    const newDeveloperInput = newDeveloperContainer.querySelector('input'); // Only one input now
 
     // 1. Populate Developer List
     try {
@@ -33,13 +32,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             existingDeveloperContainer.classList.add('hidden');
             newDeveloperContainer.classList.remove('hidden');
             developerSelect.required = false;
-            newDeveloperInputs.forEach(input => input.required = true);
+            newDeveloperInput.required = true;
         } else {
             // Show existing company dropdown, make it required, hide new company fields
             existingDeveloperContainer.classList.remove('hidden');
             newDeveloperContainer.classList.add('hidden');
             developerSelect.required = true;
-            newDeveloperInputs.forEach(input => input.required = false);
+            newDeveloperInput.required = false;
         }
     });
     // Trigger change on load to set initial state correctly

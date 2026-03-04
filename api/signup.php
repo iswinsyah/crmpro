@@ -2,96 +2,95 @@
 // api/signup.php
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST");
+header("Access-control-Allow-Methods: POST");
 
 require_once 'db_connect_pdo.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Common fields
+// --- Validasi Input ---
 $nama_user = trim($data['nama_user'] ?? '');
 $username = trim($data['username'] ?? '');
 $password = trim($data['password'] ?? '');
+$email = trim($data['email'] ?? '');
+$no_whatsapp = trim($data['no_whatsapp'] ?? '');
 $role = trim($data['role'] ?? '');
 
-if (empty($nama_user) || empty($username) || empty($password) || empty($role)) {
+if (empty($nama_user) || empty($username) || empty($password) || empty($email) || empty($no_whatsapp) || empty($role)) {
     http_response_code(400);
-    echo json_encode(["message" => "Nama, Username, Password, dan Role wajib diisi."]);
+    echo json_encode(["message" => "Semua field wajib diisi."]);
     exit;
 }
 
 try {
-    // --- Check if username already exists (common for all roles) ---
+    // --- Cek Username Duplikat ---
     $stmtCheck = $pdo->prepare("SELECT id FROM users WHERE username = ?");
     $stmtCheck->execute([$username]);
     if ($stmtCheck->fetch()) {
-        http_response_code(409); // 409 Conflict
-        echo json_encode(["message" => "Username sudah digunakan, silakan pilih yang lain."]);
+        http_response_code(409);
+        echo json_encode(["message" => "Username '$username' sudah digunakan, silakan pilih yang lain."]);
+        exit;
+    }
+    
+    // --- Cek Email Duplikat ---
+    $stmtCheckEmail = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+    $stmtCheckEmail->execute([$email]);
+    if ($stmtCheckEmail->fetch()) {
+        http_response_code(409);
+        echo json_encode(["message" => "Email '$email' sudah terdaftar, silakan gunakan email lain."]);
         exit;
     }
 
-    $pdo->beginTransaction(); // Start transaction
+    $pdo->beginTransaction();
 
+    $developer_id = null;
+
+    // --- Logika untuk Role Developer ---
     if ($role === 'Developer') {
-        // --- SCENARIO A: Registering a new Developer and their Company ---
         $nama_perusahaan = trim($data['nama_perusahaan'] ?? '');
-        $alamat_perusahaan = trim($data['alamat_perusahaan'] ?? '');
-        $kontak_perusahaan = trim($data['kontak_perusahaan'] ?? '');
-
         if (empty($nama_perusahaan)) {
-            http_response_code(400);
-            echo json_encode(["message" => "Nama Perusahaan Baru wajib diisi."]);
-            exit;
+            throw new Exception("Nama perusahaan baru wajib diisi untuk role Developer.");
         }
 
-        // 1. Insert new developer
+        // Insert perusahaan baru dengan status 'Active' dan kontak dari no whatsapp
         $stmtDev = $pdo->prepare(
-            "INSERT INTO developers (nama_perusahaan, alamat, kontak, status_langganan) VALUES (?, ?, ?, 'Trial')"
+            "INSERT INTO developers (nama_perusahaan, kontak, status_langganan) VALUES (?, ?, 'Active')"
         );
-        $stmtDev->execute([$nama_perusahaan, $alamat_perusahaan, $kontak_perusahaan]);
-        $new_developer_id = $pdo->lastInsertId();
-
-        // 2. Insert new user (the owner)
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        $stmtUser = $pdo->prepare(
-            "INSERT INTO users (developer_id, nama_user, role, username, password) VALUES (?, ?, ?, ?, ?)"
-        );
-        $stmtUser->execute([$new_developer_id, $nama_user, 'Developer', $username, $passwordHash]);
-        
-        $message = "Perusahaan dan Akun Owner berhasil didaftarkan! Silakan login.";
-
+        $stmtDev->execute([$nama_perusahaan, $no_whatsapp]);
+        $developer_id = $pdo->lastInsertId();
     } else {
-        // --- SCENARIO B: Joining an existing company (Admin CS or Agent) ---
-        $allowed_roles = ['Admin CS', 'Agent Freelance'];
-        if (!in_array($role, $allowed_roles)) {
-            http_response_code(400);
-            echo json_encode(["message" => "Role tidak valid untuk pendaftaran."]);
-            exit;
-        }
-
-        $developer_id = $data['developer_id'] ?? '';
+        // --- Logika untuk Role Lain ---
+        $developer_id = $data['developer_id'] ?? null;
         if (empty($developer_id)) {
-            http_response_code(400);
-            echo json_encode(["message" => "Perusahaan wajib dipilih."]);
-            exit;
+            throw new Exception("Perusahaan wajib dipilih untuk role ini.");
         }
-
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("INSERT INTO users (developer_id, nama_user, role, username, password) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$developer_id, $nama_user, $role, $username, $passwordHash]);
-        $message = "Pendaftaran berhasil! Silakan login.";
     }
 
-    $pdo->commit(); // Commit transaction if all is well
+    // --- Insert User Baru ---
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+    $stmtUser = $pdo->prepare(
+        "INSERT INTO users (developer_id, nama_user, username, password, email, no_whatsapp, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Active')"
+    );
+    $stmtUser->execute([
+        $developer_id,
+        $nama_user,
+        $username,
+        $passwordHash,
+        $email,
+        $no_whatsapp,
+        $role
+    ]);
 
-    echo json_encode(["message" => $message]);
+    $pdo->commit();
 
-} catch (PDOException $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack(); // Rollback on error
+    echo json_encode(["message" => "Pendaftaran berhasil! Silakan login dengan akun baru Anda."]);
+
+} catch (Exception $e) {
+    if (isset($pdo) && $pdo->inTransaction()) {
+        $pdo->rollBack();
     }
     http_response_code(500);
-    error_log("Signup Error: " . $e->getMessage()); // Log error for admin
-    echo json_encode(["message" => "Terjadi kesalahan pada server. Silakan coba lagi nanti."]);
+    error_log("Signup Error: " . $e->getMessage());
+    echo json_encode(["message" => "Terjadi kesalahan: " . $e->getMessage()]);
 }
 ?>
