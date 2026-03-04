@@ -136,4 +136,24 @@ export class ApiService {
             throw error;
         }
     }
+
+    static async getAllUsers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/get_all_users.php`);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (getAllUsers):", error);
+            throw error;
+        }
+    }
+
+    static async getUserForImpersonation(userId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/get_user_for_impersonation.php?user_id=${userId}`);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (getUserForImpersonation):", error);
+            throw error;
+        }
+    }
 }

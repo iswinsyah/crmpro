@@ -10,6 +10,7 @@ import { TasksComponent } from './components/tasks.js';
 import { CalendarComponent } from './components/calendar.js';
 import { ValidationComponent } from './components/validation.js';
 import { MenuManagementComponent } from './components/menu_management.js';
+import { ImpersonationComponent } from './components/impersonation.js';
 import { SettingsComponent } from './components/settings.js';
 
 // --- Cek Sesi Login ---
@@ -48,6 +49,7 @@ if (!loggedInUser) {
         { id: 'persona', icon: 'user-check', label: 'Persona Insight', roles: ['Developer', 'Admin CS', 'Super Admin'], category: 'Strategy & Setup' },
         { id: 'ai-engine', icon: 'database', label: 'AI Engine Config', roles: ['Developer', 'Super Admin'], category: 'Strategy & Setup' },
         { id: 'menu-management', icon: 'list-checks', label: 'Menu Management', roles: ['Super Admin'], category: 'Strategy & Setup' },
+        { id: 'impersonation', icon: 'user-cog', label: 'Mode Penyamaran', roles: ['Super Admin'], category: 'Strategy & Setup' },
         { id: 'settings', icon: 'settings', label: 'Settings', roles: ['Developer', 'Super Admin'], category: 'Strategy & Setup' },
     ];
 
@@ -67,8 +69,10 @@ if (!loggedInUser) {
     let settingsComponent = null;
     let validationComponent = null;
     let menuManagementComponent = null;
+    let impersonationComponent = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
+        checkImpersonation();
         setupUserUI();
         console.log("MCS Master: Memulai aplikasi...");
         try {
@@ -81,6 +85,28 @@ if (!loggedInUser) {
             console.error("MCS Master Error:", error);
         }
     });
+
+    function checkImpersonation() {
+        const superAdminSession = localStorage.getItem('mgo_super_admin_session');
+        if (superAdminSession) {
+            const banner = document.createElement('div');
+            banner.className = 'bg-orange-500 text-white text-xs font-bold p-2 text-center fixed top-0 left-0 right-0 z-[200]';
+            banner.innerHTML = `
+                Anda sedang login sebagai <strong>${state.currentUser.nama_user}</strong>. 
+                <button id="exit-impersonation" class="ml-4 font-black underline hover:text-orange-200">Kembali ke Akun Super Admin</button>
+            `;
+            document.body.prepend(banner);
+            document.body.style.paddingTop = '32px';
+
+            document.getElementById('exit-impersonation').addEventListener('click', () => {
+                if (confirm('Apakah Anda yakin ingin kembali ke akun Super Admin?')) {
+                    localStorage.setItem('mgo_user', superAdminSession);
+                    localStorage.removeItem('mgo_super_admin_session');
+                    window.location.href = 'index.php';
+                }
+            });
+        }
+    }
 
     async function refreshData() {
         try {
@@ -263,6 +289,10 @@ if (!loggedInUser) {
             mainContent.innerHTML = `<section id="tab-menu-management" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             menuManagementComponent = new MenuManagementComponent('tab-menu-management', menus);
             menuManagementComponent.render();
+        } else if (tabId === 'impersonation') {
+            mainContent.innerHTML = `<section id="tab-impersonation" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
+            impersonationComponent = new ImpersonationComponent('tab-impersonation');
+            impersonationComponent.render();
         } else {
             mainContent.innerHTML = `<div class="p-10 text-center text-slate-400">Modul ${tabId} belum dimigrasi.</div>`;
         }
