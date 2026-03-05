@@ -156,7 +156,3 @@ export class SettingsComponent {
         }
     }
 }
-        
-        if (window.lucide) window.lucide.createIcons();
-    }
-}
