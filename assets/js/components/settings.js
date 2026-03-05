@@ -14,15 +14,30 @@ export class SettingsComponent {
         this.container.innerHTML = this.ui.renderLoading('Memuat pengaturan...');
 
         try {
-            // Hanya Developer atau Super Admin yang bisa akses
             const userRole = this.state.currentUser.role;
+
+            // 1. Cek role umum
             if (userRole !== 'Developer' && userRole !== 'Super Admin') {
                 this.container.innerHTML = this.ui.renderError('Hanya Developer atau Super Admin yang dapat mengakses halaman ini.');
                 if (window.lucide) window.lucide.createIcons();
                 return;
             }
             
+            // 2. Handle Super Admin
+            if (userRole === 'Super Admin') {
+                this.container.innerHTML = this.renderForSuperAdmin();
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            // 3. Handle Developer
             const developerId = this.state.currentUser.developer_id;
+            if (!developerId) {
+                this.container.innerHTML = this.ui.renderError('Akun Developer Anda tidak terhubung dengan data perusahaan. Silakan hubungi support.');
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
+            
             this.settingsData = await ApiService.get(`get_developer_settings.php?developer_id=${developerId}`);
             
             this.container.innerHTML = this.renderForm();
@@ -33,6 +48,16 @@ export class SettingsComponent {
             console.error(error);
             if (window.lucide) window.lucide.createIcons();
         }
+    }
+
+    renderForSuperAdmin() {
+        return `
+            <div class="max-w-3xl mx-auto text-center p-10 bg-white rounded-2xl shadow-md border">
+                <i data-lucide="shield-alert" class="w-16 h-16 mx-auto text-orange-500"></i>
+                <h3 class="mt-4 text-lg font-bold text-slate-700">Halaman Khusus Developer</h3>
+                <p class="mt-1 text-sm text-slate-500">Sebagai Super Admin, Anda dapat mengubah pengaturan setiap perusahaan melalui halaman <strong class="text-slate-600">Client Management</strong>.</p>
+            </div>
+        `;
     }
 
     renderForm() {
