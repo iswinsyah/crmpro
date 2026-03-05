@@ -1,9 +1,10 @@
 import { ApiService } from '../api.js';
 
 export class MenuManagementComponent {
-    constructor(elementId, menus) {
+    constructor(elementId, state) {
         this.container = document.getElementById(elementId);
-        this.menus = menus.filter(m => m.menu_id !== 'menu-management'); 
+        this.state = state;
+        this.menus = state.menus.filter(m => m.menu_id !== 'menu-management' && m.menu_id !== 'settings'); 
         this.roles = ['Agent Freelance', 'Admin CS', 'Developer', 'Super Admin'];
     }
 
@@ -114,7 +115,12 @@ export class MenuManagementComponent {
         }));
 
         try {
-            const response = await ApiService.saveMenuAccess(payload);
+            const finalPayload = {
+                user_id: this.state.currentUser.id,
+                menus: payload
+            };
+            // Gunakan metode post generik untuk memastikan kompatibilitas
+            const response = await ApiService.post('save_menu_access.php', finalPayload);
             alert(response.message);
         } catch (error) {
             alert('Gagal menyimpan: ' + error.message);

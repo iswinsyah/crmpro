@@ -10,8 +10,8 @@ import { TasksComponent } from './components/tasks.js';
 import { CalendarComponent } from './components/calendar.js';
 import { ValidationComponent } from './components/validation.js';
 import { MenuManagementComponent } from './components/menu_management.js';
-import { ImpersonationComponent } from './components/impersonation.js';
-import { SettingsComponent } from './components/settings.js';
+import { ImpersonationComponent } from './components/impersonation.js'; 
+// SettingsComponent sekarang ditangani oleh MenuManagementComponent
 
 // --- Cek Sesi Login ---
 const loggedInUser = JSON.parse(localStorage.getItem('mgo_user'));
@@ -22,36 +22,9 @@ if (!loggedInUser) {
         currentUser: loggedInUser,
         currentRole: loggedInUser.role, // Ambil role dari data login
         currentTab: 'pipeline',
-        leads: []
+        leads: [],
+        menus: [] // Menu akan dimuat secara dinamis
     };
-
-    const menus = [
-        // Kategori 1: Strategy & Overview
-        { id: 'portfolio', icon: 'globe', label: 'Global Portfolio', roles: ['Super Admin', 'Developer'], category: 'Strategy & Overview' },
-        { id: 'validation', icon: 'check-shield', label: 'Validasi Pendaftar', roles: ['Super Admin'], category: 'Strategy & Overview' },
-        { id: 'client-management', icon: 'building-2', label: 'Client Management', roles: ['Super Admin'], category: 'Strategy & Overview' },
-        
-        // Kategori 2: Operational Area
-        { id: 'pipeline', icon: 'layout-dashboard', label: 'Lead & Pipeline', roles: ['All'], category: 'Operational Area' },
-        { id: 'reminder-followup', icon: 'bell-ring', label: 'Reminder Followup', roles: ['Admin CS', 'Agent Freelance', 'Super Admin'], category: 'Operational Area' },
-        { id: 'reporting', icon: 'file-bar-chart', label: 'Weekly Report', roles: ['Developer', 'Admin CS', 'Super Admin'], category: 'Operational Area' },
-        
-        // Kategori 3: Productivity Tools
-        { id: 'tasks', icon: 'check-square', label: 'Task Management', roles: ['All'], category: 'Productivity Tools' },
-        { id: 'calendar', icon: 'calendar', label: 'Calendar', roles: ['All'], category: 'Productivity Tools' },
-
-        // Kategori 4: AI Assistants
-        { id: 'ai-lead', icon: 'brain-circuit', label: 'Lead Analyzer', roles: ['All'], category: 'AI Assistants' },
-        { id: 'ai-creative', icon: 'sparkles', label: 'Creative Suite', roles: ['All'], category: 'AI Assistants' },
-        { id: 'ai-objection', icon: 'shield-alert', label: 'Objection Gen', roles: ['All'], category: 'AI Assistants' },
-        
-        // Kategori 5: Strategy & Setup
-        { id: 'persona', icon: 'user-check', label: 'Persona Insight', roles: ['Developer', 'Admin CS', 'Super Admin'], category: 'Strategy & Setup' },
-        { id: 'ai-engine', icon: 'database', label: 'AI Engine Config', roles: ['Developer', 'Super Admin'], category: 'Strategy & Setup' },
-        { id: 'menu-management', icon: 'list-checks', label: 'Menu Management', roles: ['Super Admin'], category: 'Strategy & Setup' },
-        { id: 'impersonation', icon: 'user-cog', label: 'Mode Penyamaran', roles: ['Super Admin'], category: 'Strategy & Setup' },
-        { id: 'settings', icon: 'settings', label: 'Settings', roles: ['Developer', 'Super Admin'], category: 'Strategy & Setup' },
-    ];
 
     const ui = new UI();
     let pipelineComponent = null;
@@ -66,24 +39,60 @@ if (!loggedInUser) {
     let aiEngineConfigComponent = null;
     let tasksComponent = null;
     let calendarComponent = null;
-    let settingsComponent = null;
     let validationComponent = null;
     let menuManagementComponent = null;
     let impersonationComponent = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
+        await initializeApp();
+    });
+
+    async function initializeApp() {
         checkImpersonation();
         setupUserUI();
         console.log("MCS Master: Memulai aplikasi...");
         try {
+            // 1. Ambil menu dinamis dari API
+            const fetchedMenus = await ApiService.get('get_menus.php');
+            // Tambahkan info kategori ke menu (sementara di frontend)
+            state.menus = assignCategoriesToMenus(fetchedMenus);
+            console.log("MCS Master: Menu dinamis dimuat.", state.menus);
+
+            // 2. Siapkan event listener
             setupEventListeners();
+
+            // 3. Ambil data awal
             await refreshData();
+
+            // 4. Render sidebar dengan menu dinamis
             renderSidebar();
-            switchTab('pipeline');
+
+            // 5. Tangani routing berdasarkan hash URL
+            handleRouting();
+            
             console.log("MCS Master: Aplikasi siap digunakan!");
         } catch (error) {
             console.error("MCS Master Error:", error);
+            document.getElementById('main-content').innerHTML = `<div class="p-10 text-center text-red-500">Gagal memuat konfigurasi aplikasi. Coba muat ulang halaman.</div>`;
         }
+    }
+
+    async function handleRouting() {
+        const hash = window.location.hash.substring(1);
+
+        if (hash === 'settings' && state.currentUser.role === 'Developer' && state.currentUser.is_first_login) {
+            console.log("Developer login pertama, arahkan ke settings (Menu Management).");
+            switchTab('settings'); // Ini akan memuat MenuManagementComponent
+            await markFirstLoginAsComplete();
+        } else {
+            switchTab(hash || 'pipeline'); // Halaman default
+        }
+
+        // Dengarkan perubahan hash untuk navigasi tanpa reload halaman
+        window.addEventListener('hashchange', () => {
+            const newHash = window.location.hash.substring(1);
+            switchTab(newHash || 'pipeline');
+        });
     });
 
     function checkImpersonation() {
@@ -108,6 +117,21 @@ if (!loggedInUser) {
         }
     }
 
+    async function markFirstLoginAsComplete() {
+        try {
+            await ApiService.post('update_first_login_status.php', { user_id: state.currentUser.id });
+            
+            // Update localStorage agar tidak redirect lagi saat refresh
+            const updatedUser = { ...state.currentUser, is_first_login: false };
+            state.currentUser = updatedUser;
+            localStorage.setItem('mgo_user', JSON.stringify(updatedUser));
+            console.log("Status login pertama telah diperbarui.");
+
+        } catch (error) {
+            console.error("Gagal memperbarui status login pertama:", error);
+        }
+    }
+
     async function refreshData() {
         try {
             // Kirim user_id yang sedang login ke API
@@ -121,7 +145,7 @@ if (!loggedInUser) {
     function setupEventListeners() {
         document.getElementById('btn-open-sidebar').addEventListener('click', () => ui.toggleSidebar(true));
         document.getElementById('btn-close-sidebar').addEventListener('click', () => ui.toggleSidebar(false));
-        document.getElementById('mobile-overlay').addEventListener('click', () => ui.toggleSidebar(false));
+        document.getElementById('mobile-overlay').addEventListener('click', () => ui.toggleSidebar(false)); 
         document.getElementById('btn-logout').addEventListener('click', logout);
         document.getElementById('btn-add-lead').addEventListener('click', () => {
             injectAddLeadModal();
@@ -229,6 +253,13 @@ if (!loggedInUser) {
         const mainContent = document.getElementById('main-content');
         mainContent.innerHTML = '';
 
+        // Update judul header
+        const activeMenu = state.menus.find(m => m.menu_id === tabId);
+        document.getElementById('header-title-text').innerText = activeMenu ? activeMenu.label : tabId.replace('-', ' ');
+
+        // Render ulang sidebar untuk menyorot menu aktif
+        renderSidebar();
+
         if (tabId === 'pipeline') {
             mainContent.innerHTML = `<section id="tab-pipeline" class="h-full flex overflow-x-auto hide-scroll space-x-4 md:space-x-6 pb-4 animate-in snap-x"></section>`;
             pipelineComponent = new PipelineComponent('tab-pipeline', state);
@@ -277,17 +308,13 @@ if (!loggedInUser) {
             mainContent.innerHTML = `<section id="tab-calendar" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             calendarComponent = new CalendarComponent('tab-calendar');
             calendarComponent.render();
-        } else if (tabId === 'settings') {
-            mainContent.innerHTML = `<section id="tab-settings" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
-            settingsComponent = new SettingsComponent('tab-settings');
-            settingsComponent.render();
         } else if (tabId === 'validation') {
             mainContent.innerHTML = `<section id="tab-validation" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             validationComponent = new ValidationComponent('tab-validation');
             validationComponent.render();
-        } else if (tabId === 'menu-management') {
+        } else if (tabId === 'menu-management' || tabId === 'settings') { // 'settings' untuk Developer adalah Menu Management
             mainContent.innerHTML = `<section id="tab-menu-management" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
-            menuManagementComponent = new MenuManagementComponent('tab-menu-management', menus);
+            menuManagementComponent = new MenuManagementComponent('tab-menu-management', state);
             menuManagementComponent.render();
         } else if (tabId === 'impersonation') {
             mainContent.innerHTML = `<section id="tab-impersonation" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
@@ -303,35 +330,76 @@ if (!loggedInUser) {
     function renderSidebar() {
         const sidebarMenu = document.getElementById('sidebar-menu');
         sidebarMenu.innerHTML = '';
-        let lastCategory = '';
 
-        menus.forEach(menu => {
-            // Cek apakah user punya akses ke menu ini
-            const hasAccess = menu.roles.includes('All') || menu.roles.includes(state.currentRole);
-            if (!hasAccess) return;
+        // Tentukan urutan kategori
+        const categoryOrder = [
+            'Strategy & Overview',
+            'Operational Area',
+            'Productivity Tools',
+            'AI Assistants',
+            'Strategy & Setup'
+        ];
 
-            if (menu.category !== lastCategory) {
-                const catHeader = document.createElement('p');
-                catHeader.className = "text-[9px] text-teal-600 font-black uppercase tracking-widest mb-2 mt-5 md:mt-6 pl-2";
-                catHeader.innerText = menu.category;
-                sidebarMenu.appendChild(catHeader);
-                lastCategory = menu.category;
+        // Kelompokkan menu berdasarkan kategori
+        const groupedMenus = state.menus.reduce((acc, menu) => {
+            const category = menu.category || 'Uncategorized';
+            if (!acc[category]) {
+                acc[category] = [];
             }
+            acc[category].push(menu);
+            return acc;
+        }, {});
 
-            const isActive = menu.id === state.currentTab;
-            const btn = document.createElement('button');
-            btn.className = `w-full flex items-center px-4 py-3 rounded-xl transition-all mb-1 ${
-                isActive ? 'bg-teal-800 text-white shadow-lg' : 'text-teal-100 hover:bg-teal-800/50 hover:text-white'
-            }`;
-            btn.innerHTML = `
-                <i data-lucide="${menu.icon}" class="w-[16px] h-[16px] md:w-[18px] md:h-[18px] mr-3"></i>
-                <span class="font-bold text-[10px] uppercase tracking-wider">${menu.label}</span>
-            `;
-            
-            btn.addEventListener('click', () => switchTab(menu.id));
-            sidebarMenu.appendChild(btn);
+        categoryOrder.forEach(category => {
+            const menusInCategory = groupedMenus[category];
+            if (!menusInCategory) return;
+
+            // Filter menu berdasarkan hak akses role
+            const accessibleMenus = menusInCategory.filter(menu => 
+                menu.roles.includes('All') || menu.roles.includes(state.currentRole)
+            );
+
+            if (accessibleMenus.length === 0) return;
+
+            const catHeader = document.createElement('p');
+            catHeader.className = "text-[9px] text-teal-600 font-black uppercase tracking-widest mb-2 mt-5 md:mt-6 pl-2";
+            catHeader.innerText = category;
+            sidebarMenu.appendChild(catHeader);
+
+            accessibleMenus.forEach(menu => {
+                const isActive = menu.menu_id === state.currentTab;
+                const btn = document.createElement('button');
+                btn.id = `menu-${menu.menu_id}`; // Tambahkan ID agar mudah diseleksi
+                btn.className = `w-full flex items-center px-4 py-3 rounded-xl transition-all mb-1 ${
+                    isActive ? 'bg-teal-800 text-white shadow-lg' : 'text-teal-100 hover:bg-teal-800/50 hover:text-white'
+                }`;
+                btn.innerHTML = `
+                    <i data-lucide="${menu.icon}" class="w-[16px] h-[16px] md:w-[18px] md:h-[18px] mr-3"></i>
+                    <span class="font-bold text-[10px] uppercase tracking-wider">${menu.label}</span>
+                `;
+                
+                btn.addEventListener('click', () => {
+                    window.location.hash = menu.menu_id;
+                });
+                sidebarMenu.appendChild(btn);
+            });
         });
 
         if (window.lucide) window.lucide.createIcons();
+    }
+
+    function assignCategoriesToMenus(menus) {
+        const categoryMap = {
+            'portfolio': 'Strategy & Overview', 'validation': 'Strategy & Overview', 'client-management': 'Strategy & Overview',
+            'pipeline': 'Operational Area', 'reminder-followup': 'Operational Area', 'reporting': 'Operational Area',
+            'tasks': 'Productivity Tools', 'calendar': 'Productivity Tools',
+            'ai-lead': 'AI Assistants', 'ai-creative': 'AI Assistants', 'ai-objection': 'AI Assistants',
+            'persona': 'Strategy & Setup', 'ai-engine': 'Strategy & Setup', 'menu-management': 'Strategy & Setup', 'impersonation': 'Strategy & Setup', 'settings': 'Strategy & Setup',
+            'dashboard': 'Operational Area', 'leads-management': 'Operational Area'
+        };
+        return menus.map(menu => {
+            menu.category = categoryMap[menu.menu_id] || 'Uncategorized';
+            return menu;
+        });
     }
 }
