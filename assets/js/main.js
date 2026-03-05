@@ -10,8 +10,8 @@ import { TasksComponent } from './components/tasks.js';
 import { CalendarComponent } from './components/calendar.js';
 import { ValidationComponent } from './components/validation.js';
 import { MenuManagementComponent } from './components/menu_management.js';
-import { ImpersonationComponent } from './components/impersonation.js'; 
-// SettingsComponent sekarang ditangani oleh MenuManagementComponent
+import { ImpersonationComponent } from './components/impersonation.js';
+import { SettingsComponent } from './components/settings.js';
 
 // --- Cek Sesi Login ---
 const loggedInUser = JSON.parse(localStorage.getItem('mgo_user'));
@@ -40,6 +40,7 @@ if (!loggedInUser) {
     let tasksComponent = null;
     let calendarComponent = null;
     let validationComponent = null;
+    let settingsComponent = null;
     let menuManagementComponent = null;
     let impersonationComponent = null;
 
@@ -312,7 +313,11 @@ if (!loggedInUser) {
             mainContent.innerHTML = `<section id="tab-validation" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             validationComponent = new ValidationComponent('tab-validation');
             validationComponent.render();
-        } else if (tabId === 'menu-management' || tabId === 'settings') { // 'settings' untuk Developer adalah Menu Management
+        } else if (tabId === 'settings') {
+            mainContent.innerHTML = `<section id="tab-settings" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
+            settingsComponent = new SettingsComponent('tab-settings');
+            settingsComponent.render();
+        } else if (tabId === 'menu-management') {
             mainContent.innerHTML = `<section id="tab-menu-management" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             menuManagementComponent = new MenuManagementComponent('tab-menu-management', state);
             menuManagementComponent.render();

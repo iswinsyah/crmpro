@@ -14,13 +14,9 @@ export class MenuManagementComponent {
     }
 
     renderTable() {
-        const isSettingsPage = this.state.currentTab === 'settings';
-        const title = isSettingsPage ? 'Pengaturan' : 'Menu Management';
-        const subtitle = isSettingsPage
-            ? 'Atur hak akses menu untuk role di dalam perusahaan Anda. Perubahan akan aktif setelah user login ulang.'
-            : 'Atur hak akses menu global untuk setiap role. Perubahan akan aktif setelah user login ulang.';
-
-
+        const title = 'Menu Management';
+        const subtitle = 'Atur hak akses menu global untuk setiap role. Perubahan akan aktif setelah user login ulang.';
+        
         const rows = this.menus.map(menu => {
             const checkboxes = this.roles.map(role => {
                 const hasAccess = menu.roles.includes(role) || menu.roles.includes('All');
