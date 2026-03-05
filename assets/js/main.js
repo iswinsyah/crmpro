@@ -23,7 +23,8 @@ if (!loggedInUser) {
         currentRole: loggedInUser.role, // Ambil role dari data login
         currentTab: 'pipeline',
         leads: [],
-        menus: [] // Menu akan dimuat secara dinamis
+        menus: [], // Menu akan dimuat secara dinamis
+        developerSettings: null // Untuk menyimpan info branding
     };
 
     const ui = new UI();
@@ -50,6 +51,7 @@ if (!loggedInUser) {
 
     async function initializeApp() {
         checkImpersonation();
+        await fetchDeveloperSettings(); // Ambil info branding developer
         setupUserUI();
         console.log("MCS Master: Memulai aplikasi...");
         try {
@@ -116,6 +118,32 @@ if (!loggedInUser) {
                 }
             });
         }
+    }
+
+    async function fetchDeveloperSettings() {
+        if (state.currentUser.role === 'Super Admin' || !state.currentUser.developer_id) {
+            return; // Tidak ada branding untuk Super Admin atau user tanpa developer
+        }
+        try {
+            state.developerSettings = await ApiService.get(`get_developer_settings.php?developer_id=${state.currentUser.developer_id}`);
+            applyBranding();
+        } catch (error) {
+            console.error("Gagal memuat pengaturan branding:", error);
+        }
+    }
+
+    function applyBranding() {
+        if (!state.developerSettings) return;
+
+        const { app_name, logo_url } = state.developerSettings;
+
+        // Branding Sidebar
+        const sidebarLogo = document.getElementById('sidebar-logo');
+        const sidebarTitle = document.querySelector('#sidebar h1');
+        const sidebarSubtitle = document.querySelector('#sidebar p');
+
+        if (logo_url) { sidebarLogo.src = logo_url; sidebarLogo.classList.remove('hidden'); }
+        if (app_name) { sidebarTitle.innerText = app_name; sidebarSubtitle.classList.add('hidden'); }
     }
 
     async function markFirstLoginAsComplete() {

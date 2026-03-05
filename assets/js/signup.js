@@ -1,13 +1,70 @@
 import { ApiService } from './api.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function handleReferral() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refId = urlParams.get('ref');
+
+    if (!refId) {
+        // No referral, run standard signup logic
+        initializeStandardSignup();
+        return false; // Not a referral
+    }
+
+    // Referral link detected, run branded signup
+    await initializeBrandedSignup(refId);
+    return true; // Is a referral
+}
+
+async function initializeBrandedSignup(developerId) {
+    // Hide general title and show loading for branding
+    document.querySelector('#signup-form').classList.add('hidden');
+    document.querySelector('.text-center h1').innerText = 'Memuat Halaman Pendaftaran...';
+    document.querySelector('.text-center p').classList.add('hidden');
+
+    try {
+        const devInfo = await ApiService.get(`get_public_developer_info.php?id=${developerId}`);
+
+        // Apply branding
+        const brandingSection = document.getElementById('branding-section');
+        const devLogo = document.getElementById('developer-logo');
+        const devName = document.getElementById('developer-name');
+
+        devLogo.src = devInfo.logo_url || 'https://via.placeholder.com/150/E2E8F0/94A3B8?text=Logo';
+        devName.innerText = devInfo.app_name || devInfo.nama_perusahaan;
+        brandingSection.classList.remove('hidden');
+
+        // Update main titles
+        document.querySelector('.text-center h1').innerText = 'Buat Akun Baru';
+        document.querySelector('.text-center p').innerText = `Bergabunglah dengan tim ${devInfo.nama_perusahaan}.`;
+        document.querySelector('.text-center p').classList.remove('hidden');
+
+        // Configure the form for referral signup
+        document.getElementById('existing-developer-container').classList.add('hidden');
+        document.getElementById('new-developer-container').classList.add('hidden');
+
+        // Limit role selection for referred users
+        const roleSelect = document.getElementById('role-select');
+        roleSelect.innerHTML = `
+            <option value="Agent Freelance">Agent Freelance</option>
+            <option value="Admin CS">Admin CS</option>
+        `;
+        
+        document.querySelector('#signup-form').classList.remove('hidden');
+
+    } catch (error) {
+        document.querySelector('.text-center h1').innerText = 'Link Pendaftaran Tidak Valid';
+        document.querySelector('.text-center p').innerText = error.message;
+        document.querySelector('.text-center p').classList.remove('hidden');
+        throw error; // Stop further execution
+    }
+}
+
+async function initializeStandardSignup() {
     const developerSelect = document.getElementById('developer-select');
-    const signupForm = document.getElementById('signup-form');
-    const signupButton = document.getElementById('btn-signup');
     const roleSelect = document.getElementById('role-select');
     const existingDeveloperContainer = document.getElementById('existing-developer-container');
     const newDeveloperContainer = document.getElementById('new-developer-container');
-    const newDeveloperInput = newDeveloperContainer.querySelector('input'); // Only one input now
+    const newDeveloperInput = newDeveloperContainer.querySelector('input');
 
     // 1. Populate Developer List
     try {
@@ -28,23 +85,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     roleSelect.addEventListener('change', (e) => {
         const selectedRole = e.target.value;
         if (selectedRole === 'Developer') {
-            // Show new company fields, make them required, hide existing company dropdown
             existingDeveloperContainer.classList.add('hidden');
             newDeveloperContainer.classList.remove('hidden');
             developerSelect.required = false;
             newDeveloperInput.required = true;
         } else {
-            // Show existing company dropdown, make it required, hide new company fields
             existingDeveloperContainer.classList.remove('hidden');
             newDeveloperContainer.classList.add('hidden');
             developerSelect.required = true;
             newDeveloperInput.required = false;
         }
     });
-    // Trigger change on load to set initial state correctly
     roleSelect.dispatchEvent(new Event('change'));
+}
 
-    // 3. Handle Form Submission
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await handleReferral();
+    } catch (error) {
+        // If referral initialization fails, don't attach form listener
+        console.error("Initialization failed, form submission blocked.");
+        return;
+    }
+
+    const signupForm = document.getElementById('signup-form');
+    const signupButton = document.getElementById('btn-signup');
+
     signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const originalButtonText = signupButton.innerHTML;
@@ -53,6 +119,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const formData = new FormData(signupForm);
         const data = Object.fromEntries(formData.entries());
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const refId = urlParams.get('ref');
+        if (refId) {
+            data.developer_id = refId;
+        }
 
         try {
             const response = await ApiService.signup(data);

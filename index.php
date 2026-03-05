@@ -24,6 +24,7 @@
         <!-- SIDEBAR -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 w-[260px] md:w-64 bg-teal-950 text-white flex flex-col shadow-2xl z-50 transition-transform duration-300 ease-in-out shrink-0">
             <div class="p-6 md:p-8 border-b border-teal-900 text-center flex items-center justify-between md:block">
+                <img id="sidebar-logo" src="" alt="Logo" class="w-12 h-12 rounded-full mx-auto mb-3 object-cover bg-teal-900 hidden">
                 <div class="w-full">
                     <h1 class="text-xl font-black text-orange-400 tracking-tighter italic">MCS MASTER</h1>
                     <p class="text-[9px] text-teal-400 mt-1 uppercase font-bold tracking-[0.2em]">PROPERTY SYARIAH</p>
