@@ -64,9 +64,22 @@ export class SettingsComponent {
         const { app_name, notification_email, logo_url, maintenance_mode } = this.settingsData;
         const logoSrc = logo_url ? logo_url : 'https://via.placeholder.com/150/E2E8F0/94A3B8?text=Logo';
         const isMaintenanceOn = maintenance_mode == 1;
+        const referralLink = `${window.location.origin}/signup.html?ref=${this.settingsData.id}`;
 
         return `
             <div class="max-w-3xl mx-auto space-y-6">
+                <!-- Referral Link Section -->
+                <div class="bg-teal-50 p-6 rounded-2xl border-2 border-dashed border-teal-200 text-center animate-in">
+                    <h4 class="text-sm font-black text-teal-800 uppercase tracking-wider">Link Pendaftaran Tim Anda</h4>
+                    <p class="text-xs text-teal-600 mt-1 mb-4">Bagikan link ini kepada semua Admin CS dan Agen Freelance Anda untuk mendaftar.</p>
+                    <div class="flex items-center bg-white p-2 rounded-lg border border-teal-200 shadow-inner">
+                        <input type="text" id="referral-link-input" value="${referralLink}" readonly class="flex-1 bg-transparent text-xs font-mono text-slate-600 outline-none px-2">
+                        <button id="copy-referral-link-btn" class="ml-2 px-4 py-2 bg-teal-600 text-white rounded-md text-[10px] font-bold uppercase tracking-wider hover:bg-teal-700 transition-all active:scale-95">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
                 <div class="flex justify-between items-center">
                     <div>
                         <h3 class="font-black text-slate-800 text-xl uppercase tracking-widest">System Settings</h3>
@@ -130,6 +143,24 @@ export class SettingsComponent {
         const logoUpload = document.getElementById('logo-upload');
         if (logoUpload) {
             logoUpload.addEventListener('change', (e) => this.previewLogo(e));
+        }
+
+        const copyBtn = document.getElementById('copy-referral-link-btn');
+        const referralInput = document.getElementById('referral-link-input');
+
+        if (copyBtn && referralInput) {
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(referralInput.value).then(() => {
+                    const originalText = copyBtn.innerText;
+                    copyBtn.innerText = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.innerText = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Gagal menyalin link: ', err);
+                    alert('Gagal menyalin link. Mohon salin secara manual.');
+                });
+            });
         }
     }
     
