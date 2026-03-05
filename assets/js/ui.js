@@ -44,6 +44,24 @@ export class UI {
         alert(`[${type.toUpperCase()}] ${message}`);
     }
 
+    renderLoading(message = 'Memuat...') {
+        return `
+            <div class="p-10 text-center text-slate-500 animate-pulse">
+                <i data-lucide="loader-2" class="w-8 h-8 mx-auto animate-spin"></i>
+                <p class="mt-4 text-sm font-bold">${message}</p>
+            </div>
+        `;
+    }
+
+    renderError(message = 'Terjadi kesalahan.') {
+        return `
+            <div class="p-10 text-center text-red-500 bg-red-50 rounded-2xl border border-red-200">
+                <i data-lucide="alert-triangle" class="w-8 h-8 mx-auto"></i>
+                <p class="mt-4 text-sm font-bold">${message}</p>
+            </div>
+        `;
+    }
+
     openDrawer(lead, currentRole) {
         const isAuthorized = (currentRole === 'Developer' || currentRole === 'Super Admin/Consultant' || lead.owner === 'Self');
         

@@ -5,6 +5,8 @@ const API_BASE_URL = '/api'; // Disesuaikan untuk server produksi (Hostinger)
 
 export class ApiService {
     
+    static BASE_URL = API_BASE_URL;
+    
     static async handleResponse(response) {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
