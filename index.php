@@ -26,8 +26,8 @@
             <div class="p-6 md:p-8 border-b border-blue-900 text-center flex items-center justify-between md:block">
                 <img id="sidebar-logo" src="" alt="Logo" class="w-12 h-12 rounded-full mx-auto mb-3 object-cover bg-blue-900 hidden">
                 <div class="w-full">
-                    <h1 class="text-xl font-black text-white tracking-tighter italic">MCS MASTER</h1>
-                    <p class="text-[9px] text-blue-200 mt-1 uppercase font-bold tracking-[0.2em]">PROPERTY SYARIAH</p>
+                    <h1 class="text-xl font-black text-[#F8843F] tracking-tighter italic">MCS MASTER</h1>
+                    <p id="sidebar-subtitle" class="text-[9px] text-blue-200 mt-1 uppercase font-bold tracking-[0.2em]">PROPERTY SYARIAH</p>
                 </div>
                 <button id="btn-close-sidebar" class="md:hidden p-2 bg-white/10 rounded-xl hover:bg-white/20">
                     <i data-lucide="x" class="w-5 h-5"></i>
@@ -47,6 +47,17 @@
                 <button id="btn-logout-sidebar" class="w-full mt-2 py-2 bg-red-900/20 text-red-400 border border-red-900/30 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all flex items-center justify-center group">
                     <i data-lucide="log-out" class="w-3 h-3 mr-2 group-hover:scale-110 transition-transform"></i> Keluar
                 </button>
+            </div>
+
+            <!-- MGO Branding -->
+            <div class="p-4 mt-auto">
+                <div class="flex items-center justify-center gap-3">
+                    <img src="https://assets.about.me/background/users/d/i/g/digitalmarketingjakarta_1464927354_96.jpg" alt="Muslim Go Online" class="w-8 h-8 rounded-full">
+                    <div>
+                        <p class="text-sm font-black text-[#F8843F] tracking-tighter italic">CRM PRO</p>
+                        <p class="text-[9px] text-blue-300 -mt-1">Muslim Go Online</p>
+                    </div>
+                </div>
             </div>
         </aside>
 

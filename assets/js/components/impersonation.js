@@ -26,7 +26,7 @@ export class ImpersonationComponent {
                 <td class="p-4 font-bold text-slate-700">${user.nama_user}</td>
                 <td class="p-4 text-slate-600">${user.username}</td>
                 <td class="p-4 text-slate-500">${user.role}</td>
-                <td class="p-4 text-slate-500">${user.nama_perusahaan || 'N/A'}</td>
+                <td class="p-4 text-[#F8843F] font-semibold">${user.nama_perusahaan || 'N/A'}</td>
                 <td class="p-4 text-right">
                     <button data-user-id="${user.id}" class="login-as-btn bg-orange-100 text-orange-700 hover:bg-orange-200 px-4 py-2 rounded-lg text-xs font-bold flex items-center">
                         <i data-lucide="log-in" class="w-4 h-4 mr-2"></i>

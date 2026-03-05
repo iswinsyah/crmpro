@@ -140,7 +140,7 @@ if (!loggedInUser) {
         // Branding Sidebar
         const sidebarLogo = document.getElementById('sidebar-logo');
         const sidebarTitle = document.querySelector('#sidebar h1');
-        const sidebarSubtitle = document.querySelector('#sidebar p');
+        const sidebarSubtitle = document.getElementById('sidebar-subtitle');
 
         if (logo_url) { sidebarLogo.src = logo_url; sidebarLogo.classList.remove('hidden'); }
         if (app_name) { sidebarTitle.innerText = app_name; sidebarSubtitle.classList.add('hidden'); }
