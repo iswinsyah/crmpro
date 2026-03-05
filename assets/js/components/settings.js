@@ -61,10 +61,10 @@ export class SettingsComponent {
     }
 
     renderForm() {
-        const { app_name, notification_email, logo_url, maintenance_mode } = this.settingsData;
+        const { app_name, notification_email, logo_url, maintenance_mode, company_slug } = this.settingsData;
         const logoSrc = logo_url ? logo_url : 'https://via.placeholder.com/150/E2E8F0/94A3B8?text=Logo';
         const isMaintenanceOn = maintenance_mode == 1;
-        const referralLink = `${window.location.origin}/signup.html?ref=${this.settingsData.id}`;
+        const referralLink = `${window.location.origin}/${company_slug || ''}`;
 
         return `
             <div class="max-w-3xl mx-auto space-y-6">

@@ -12,7 +12,7 @@ if (!$developer_id) {
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT id, nama_perusahaan, app_name, notification_email, logo_url, maintenance_mode FROM developers WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT id, nama_perusahaan, company_slug, app_name, notification_email, logo_url, maintenance_mode FROM developers WHERE id = ?");
     $stmt->execute([$developer_id]);
     $settings = $stmt->fetch(PDO::FETCH_ASSOC);
 

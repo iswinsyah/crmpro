@@ -2,27 +2,27 @@ import { ApiService } from './api.js';
 
 async function handleReferral() {
     const urlParams = new URLSearchParams(window.location.search);
-    const refId = urlParams.get('ref');
+    const companySlug = urlParams.get('company_slug');
 
-    if (!refId) {
+    if (!companySlug) {
         // No referral, run standard signup logic
         initializeStandardSignup();
         return false; // Not a referral
     }
 
     // Referral link detected, run branded signup
-    await initializeBrandedSignup(refId);
+    await initializeBrandedSignup(companySlug);
     return true; // Is a referral
 }
 
-async function initializeBrandedSignup(developerId) {
+async function initializeBrandedSignup(companySlug) {
     // Hide general title and show loading for branding
     document.querySelector('#signup-form').classList.add('hidden');
     document.querySelector('.text-center h1').innerText = 'Memuat Halaman Pendaftaran...';
     document.querySelector('.text-center p').classList.add('hidden');
 
     try {
-        const devInfo = await ApiService.get(`get_public_developer_info.php?id=${developerId}`);
+        const devInfo = await ApiService.get(`get_public_developer_info.php?slug=${companySlug}`);
 
         // Apply branding
         const brandingSection = document.getElementById('branding-section');
@@ -48,6 +48,13 @@ async function initializeBrandedSignup(developerId) {
             <option value="Agent Freelance">Agent Freelance</option>
             <option value="Admin CS">Admin CS</option>
         `;
+
+        // Add a hidden input with the developer_id for form submission
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'developer_id';
+        hiddenInput.value = devInfo.id;
+        document.getElementById('signup-form').prepend(hiddenInput);
         
         document.querySelector('#signup-form').classList.remove('hidden');
 
@@ -119,12 +126,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const formData = new FormData(signupForm);
         const data = Object.fromEntries(formData.entries());
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const refId = urlParams.get('ref');
-        if (refId) {
-            data.developer_id = refId;
-        }
 
         try {
             const response = await ApiService.signup(data);

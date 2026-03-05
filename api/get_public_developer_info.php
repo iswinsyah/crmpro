@@ -3,17 +3,17 @@
 header("Content-Type: application/json");
 require_once 'db_connect_pdo.php';
 
-$developer_id = $_GET['id'] ?? null;
+$company_slug = $_GET['slug'] ?? null;
 
-if (!$developer_id) {
+if (!$company_slug) {
     http_response_code(400);
-    echo json_encode(['message' => 'Referral ID tidak valid.']);
+    echo json_encode(['message' => 'Referral slug tidak valid.']);
     exit;
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT nama_perusahaan, app_name, logo_url FROM developers WHERE id = ? AND status_langganan = 'Active'");
-    $stmt->execute([$developer_id]);
+    $stmt = $pdo->prepare("SELECT id, nama_perusahaan, app_name, logo_url FROM developers WHERE company_slug = ? AND status_langganan = 'Active'");
+    $stmt->execute([$company_slug]);
     $info = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$info) {

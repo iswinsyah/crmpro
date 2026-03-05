@@ -52,11 +52,23 @@ try {
             throw new Exception("Nama perusahaan baru wajib diisi untuk role Developer.");
         }
 
+        // --- Generate and check for unique slug ---
+        $baseSlug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $nama_perusahaan), '-'));
+        $slug = $baseSlug;
+        $counter = 1;
+        $stmtSlug = $pdo->prepare("SELECT id FROM developers WHERE company_slug = ?");
+        $stmtSlug->execute([$slug]);
+        while ($stmtSlug->fetch()) {
+            $slug = $baseSlug . '-' . $counter++;
+            $stmtSlug->execute([$slug]);
+        }
+        // --- End slug generation ---
+
         // Insert perusahaan baru dengan status 'Active' dan kontak dari no whatsapp
         $stmtDev = $pdo->prepare(
-            "INSERT INTO developers (nama_perusahaan, kontak, status_langganan) VALUES (?, ?, 'Active')"
+            "INSERT INTO developers (nama_perusahaan, company_slug, kontak, status_langganan) VALUES (?, ?, ?, 'Active')"
         );
-        $stmtDev->execute([$nama_perusahaan, $no_whatsapp]);
+        $stmtDev->execute([$nama_perusahaan, $slug, $no_whatsapp]);
         $developer_id = $pdo->lastInsertId();
     } else {
         // --- Logika untuk Role Lain ---
