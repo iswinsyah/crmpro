@@ -71,7 +71,7 @@ export class SettingsComponent {
                 <!-- Referral Link Section -->
                 <div class="bg-teal-50 p-6 rounded-2xl border-2 border-dashed border-teal-200 text-center animate-in">
                     <h4 class="text-sm font-black text-teal-800 uppercase tracking-wider">Link Pendaftaran Tim Anda</h4>
-                    <p class="text-xs text-teal-600 mt-1 mb-4">Bagikan link ini kepada semua Admin CS dan Agen Freelance Anda untuk mendaftar.</p>
+                    <p class="text-xs text-teal-600 mt-1 mb-4">Bagikan link ini kepada semua team Anda (Admin CS dan Agen Freelance )untuk  signup, login, mendaftarkan lead, menganalisa lead, memaintenace lead, dll.</p>
                     <div class="flex items-center bg-white p-2 rounded-lg border border-teal-200 shadow-inner">
                         <input type="text" id="referral-link-input" value="${referralLink}" readonly class="flex-1 bg-transparent text-xs font-mono text-slate-600 outline-none px-2">
                         <button id="copy-referral-link-btn" class="ml-2 px-4 py-2 bg-teal-600 text-white rounded-md text-[10px] font-bold uppercase tracking-wider hover:bg-teal-700 transition-all active:scale-95">
