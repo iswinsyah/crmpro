@@ -39,7 +39,7 @@ try {
         ],
         [
             'menu_id' => 'menu-management', 'label' => 'Menu Management', 'icon' => 'settings-2',
-            'allowed_roles' => json_encode(['Super Admin']), 'sort_order' => 99
+            'allowed_roles' => json_encode(['Super Admin', 'Developer']), 'sort_order' => 99
         ]
     ];
 

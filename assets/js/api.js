@@ -13,6 +13,30 @@ export class ApiService {
         return await response.json();
     }
 
+    static async get(endpoint) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/${endpoint}`);
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error(`API Error (GET ${endpoint}):`, error);
+            throw error;
+        }
+    }
+
+    static async post(endpoint, data) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error(`API Error (POST ${endpoint}):`, error);
+            throw error;
+        }
+    }
+
     static async getLeads(userId, role) { // Role might be useful for caching/logging, though backend decides
         try {
             const url = `${API_BASE_URL}/leads.php?action=list&user_id=${encodeURIComponent(userId)}`;
