@@ -315,7 +315,8 @@ if (!loggedInUser) {
             validationComponent.render();
         } else if (tabId === 'settings') {
             mainContent.innerHTML = `<section id="tab-settings" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
-            settingsComponent = new SettingsComponent('tab-settings'
+            settingsComponent = new SettingsComponent('tab-settings', state);
+            settingsComponent.render();
         } else if (tabId === 'menu-management') {
             mainContent.innerHTML = `<section id="tab-menu-management" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             menuManagementComponent = new MenuManagementComponent('tab-menu-management', state);
