@@ -102,10 +102,10 @@ if (!loggedInUser) {
         const superAdminSession = localStorage.getItem('mgo_super_admin_session');
         if (superAdminSession) {
             const banner = document.createElement('div');
-            banner.className = 'bg-orange-500 text-white text-xs font-bold p-2 text-center fixed top-0 left-0 right-0 z-[200]';
+            banner.className = 'bg-[#2845D6] text-white text-xs font-bold p-2 text-center fixed top-0 left-0 right-0 z-[200]';
             banner.innerHTML = `
                 Anda sedang login sebagai <strong>${state.currentUser.nama_user}</strong>. 
-                <button id="exit-impersonation" class="ml-4 font-black underline hover:text-orange-200">Kembali ke Akun Super Admin</button>
+                <button id="exit-impersonation" class="ml-4 font-black underline hover:text-blue-200">Kembali ke Akun Super Admin</button>
             `;
             document.body.prepend(banner);
             document.body.style.paddingTop = '32px';
@@ -204,33 +204,33 @@ if (!loggedInUser) {
         const modalHTML = `
             <div id="addLeadModal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-md hidden p-4">
                 <div class="bg-white w-full max-w-3xl rounded-[2rem] md:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in">
-                    <div class="bg-teal-950 p-5 md:p-8 text-white flex justify-between items-center shrink-0">
+                    <div class="bg-[#1e3a8a] p-5 md:p-8 text-white flex justify-between items-center shrink-0">
                         <div>
                             <h3 class="text-base md:text-xl font-black uppercase tracking-tighter leading-none">Registrasi Prospek Baru</h3>
-                            <p class="text-[8px] md:text-[10px] text-teal-400 font-bold uppercase mt-2 italic tracking-widest leading-none">Native API Connection Ready</p>
+                            <p class="text-[8px] md:text-[10px] text-blue-200 font-bold uppercase mt-2 italic tracking-widest leading-none">Native API Connection Ready</p>
                         </div>
                         <button type="button" id="btn-close-modal" class="p-2 md:p-3 hover:bg-white/10 rounded-xl transition-all"><i data-lucide="x" class="w-4 h-4 md:w-5 md:h-5"></i></button>
                     </div>
                     <form id="addLeadForm" class="p-5 md:p-8 space-y-4 md:space-y-6 overflow-y-auto custom-scrollbar">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">Nama Lengkap</label><input required name="name" type="text" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                            <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">NIK (16 Digit)</label><input required name="nik" type="text" maxlength="16" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                            <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">WhatsApp</label><input required name="phone" type="tel" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                            <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">Pekerjaan</label><input name="job" type="text" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                            <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">Nama Lengkap</label><input required name="name" type="text" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#2845D6]" /></div>
+                            <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">NIK (16 Digit)</label><input required name="nik" type="text" maxlength="16" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#2845D6]" /></div>
+                            <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">WhatsApp</label><input required name="phone" type="tel" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#2845D6]" /></div>
+                            <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">Pekerjaan</label><input name="job" type="text" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#2845D6]" /></div>
                             <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">Media Masuk</label>
-                                <select name="channel" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500">
+                                <select name="channel" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#2845D6]">
                                     <option value="FB Ads">FB Ads</option><option value="Instagram">Instagram</option><option value="TikTok">TikTok</option><option value="Lainnya">Lainnya</option>
                                 </select>
                             </div>
                             <div class="space-y-1 md:space-y-2"><label class="text-[9px] font-black text-slate-400 uppercase pl-1 tracking-widest">Segmen Prospek</label>
-                                <select name="segment" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500">
+                                <select name="segment" class="w-full bg-slate-50 border p-3 md:p-4 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#2845D6]">
                                     <option value="Karyawan Mapan">Karyawan Mapan</option><option value="Investor Produktif">Investor Produktif</option><option value="Orang Tua Mahasiswa">Orang Tua Mahasiswa</option><option value="Fresh Married">Fresh Married</option>
                                 </select>
                             </div>
                         </div>
                         <div class="flex space-x-3 pt-4 shrink-0">
                             <button type="button" id="btn-cancel-modal" class="flex-1 py-3 md:py-4 bg-slate-100 text-slate-600 rounded-xl font-black text-[10px] uppercase tracking-widest">Batal</button>
-                            <button type="submit" class="flex-2 w-full py-3 md:py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-black text-[10px] uppercase shadow-xl transition-all tracking-widest">Daftarkan Lead</button>
+                            <button type="submit" class="flex-2 w-full py-3 md:py-4 bg-[#2845D6] hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase shadow-xl transition-all tracking-widest">Daftarkan Lead</button>
                         </div>
                     </form>
                 </div>
@@ -395,7 +395,7 @@ if (!loggedInUser) {
             if (accessibleMenus.length === 0) return;
 
             const catHeader = document.createElement('p');
-            catHeader.className = "text-[9px] text-teal-600 font-black uppercase tracking-widest mb-2 mt-5 md:mt-6 pl-2";
+            catHeader.className = "text-[9px] text-blue-300 font-black uppercase tracking-widest mb-2 mt-5 md:mt-6 pl-2";
             catHeader.innerText = category;
             sidebarMenu.appendChild(catHeader);
 
@@ -404,7 +404,7 @@ if (!loggedInUser) {
                 const btn = document.createElement('button');
                 btn.id = `menu-${menu.menu_id}`; // Tambahkan ID agar mudah diseleksi
                 btn.className = `w-full flex items-center px-4 py-3 rounded-xl transition-all mb-1 ${
-                    isActive ? 'bg-teal-800 text-white shadow-lg' : 'text-teal-100 hover:bg-teal-800/50 hover:text-white'
+                    isActive ? 'bg-[#2845D6] text-white shadow-lg' : 'text-blue-100 hover:bg-blue-800/50 hover:text-white'
                 }`;
                 btn.innerHTML = `
                     <i data-lucide="${menu.icon}" class="w-[16px] h-[16px] md:w-[18px] md:h-[18px] mr-3"></i>

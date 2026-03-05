@@ -53,7 +53,7 @@ export class SettingsComponent {
     renderForSuperAdmin() {
         return `
             <div class="max-w-3xl mx-auto text-center p-10 bg-white rounded-2xl shadow-md border">
-                <i data-lucide="shield-alert" class="w-16 h-16 mx-auto text-orange-500"></i>
+                <i data-lucide="shield-alert" class="w-16 h-16 mx-auto text-[#2845D6]"></i>
                 <h3 class="mt-4 text-lg font-bold text-slate-700">Halaman Khusus Developer</h3>
                 <p class="mt-1 text-sm text-slate-500">Sebagai Super Admin, Anda dapat mengubah pengaturan setiap perusahaan melalui halaman <strong class="text-slate-600">Client Management</strong>.</p>
             </div>
@@ -69,12 +69,12 @@ export class SettingsComponent {
         return `
             <div class="max-w-3xl mx-auto space-y-6">
                 <!-- Referral Link Section -->
-                <div class="bg-teal-50 p-6 rounded-2xl border-2 border-dashed border-teal-200 text-center animate-in">
-                    <h4 class="text-sm font-black text-teal-800 uppercase tracking-wider">Link Pendaftaran Tim Anda</h4>
-                    <p class="text-xs text-teal-600 mt-1 mb-4">Bagikan link ini kepada semua team Anda (Admin CS dan Agen Freelance )untuk  signup, login, mendaftarkan lead, menganalisa lead, memaintenace lead, dll.</p>
-                    <div class="flex items-center bg-white p-2 rounded-lg border border-teal-200 shadow-inner">
+                <div class="bg-blue-50 p-6 rounded-2xl border-2 border-dashed border-blue-200 text-center animate-in">
+                    <h4 class="text-sm font-black text-blue-800 uppercase tracking-wider">Link Pendaftaran Tim Anda</h4>
+                    <p class="text-xs text-blue-600 mt-1 mb-4">Bagikan link ini kepada semua team Anda (Admin CS dan Agen Freelance )untuk  signup, login, mendaftarkan lead, menganalisa lead, memaintenace lead, dll.</p>
+                    <div class="flex items-center bg-white p-2 rounded-lg border border-blue-200 shadow-inner">
                         <input type="text" id="referral-link-input" value="${referralLink}" readonly class="flex-1 bg-transparent text-xs font-mono text-slate-600 outline-none px-2">
-                        <button id="copy-referral-link-btn" class="ml-2 px-4 py-2 bg-teal-600 text-white rounded-md text-[10px] font-bold uppercase tracking-wider hover:bg-teal-700 transition-all active:scale-95">
+                        <button id="copy-referral-link-btn" class="ml-2 px-4 py-2 bg-[#2845D6] text-white rounded-md text-[10px] font-bold uppercase tracking-wider hover:bg-blue-700 transition-all active:scale-95">
                             Copy
                         </button>
                     </div>
@@ -106,11 +106,11 @@ export class SettingsComponent {
                         <div class="space-y-4">
                             <div class="space-y-1">
                                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nama Aplikasi</label>
-                                <input type="text" name="app_name" value="${app_name || ''}" class="w-full bg-slate-50 border p-3 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500">
+                                <input type="text" name="app_name" value="${app_name || ''}" class="w-full bg-slate-50 border p-3 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#2845D6]">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Email Notifikasi</label>
-                                <input type="email" name="notification_email" value="${notification_email || ''}" class="w-full bg-slate-50 border p-3 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500">
+                                <input type="email" name="notification_email" value="${notification_email || ''}" class="w-full bg-slate-50 border p-3 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#2845D6]">
                             </div>
                             <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
                                 <div>
@@ -119,13 +119,13 @@ export class SettingsComponent {
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" name="maintenance_mode" class="sr-only peer" ${isMaintenanceOn ? 'checked' : ''}>
-                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-teal-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2845D6]"></div>
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div class="p-4 bg-slate-50 border-t border-slate-100 text-right">
-                        <button type="submit" id="btn-save-settings" class="bg-teal-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-700 shadow-lg transition-all">Save Changes</button>
+                        <button type="submit" id="btn-save-settings" class="bg-[#2845D6] text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg transition-all">Save Changes</button>
                     </div>
                 </form>
             </div>

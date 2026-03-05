@@ -37,7 +37,7 @@ export class PipelineComponent {
             colLeads.forEach(lead => {
                 const card = document.createElement('div');
                 card.draggable = true;
-                card.className = "bg-white p-4 md:p-5 rounded-xl md:rounded-3xl shadow-sm cursor-grab hover:shadow-md border-l-4 border-teal-500 transition-all active:cursor-grabbing";
+                card.className = "bg-white p-4 md:p-5 rounded-xl md:rounded-3xl shadow-sm cursor-grab hover:shadow-md border-l-4 border-[#2845D6] transition-all active:cursor-grabbing";
                 
                 card.addEventListener('dragstart', (e) => {
                     e.dataTransfer.setData("leadId", lead.id);
@@ -60,11 +60,11 @@ export class PipelineComponent {
                     </div>
                     <div class="space-y-1 mt-2 pointer-events-none">
                        <div class="flex items-center text-[9px] md:text-[10px] text-slate-500 font-bold">
-                            <i data-lucide="fingerprint" class="w-2.5 h-2.5 mr-2 text-slate-300"></i> 
+                            <i data-lucide="fingerprint" class="w-2.5 h-2.5 mr-2 text-slate-400"></i> 
                             ${maskInfo(lead.nik, lead.owner, this.state.currentRole, 'nik')}
                        </div>
                        <div class="flex items-center text-[9px] md:text-[10px] text-slate-400 font-medium">
-                            <i data-lucide="phone" class="w-2.5 h-2.5 mr-2 text-slate-300"></i> 
+                            <i data-lucide="phone" class="w-2.5 h-2.5 mr-2 text-slate-400"></i> 
                             ${maskInfo(lead.phone, lead.owner, this.state.currentRole, 'phone')}
                        </div>
                     </div>

@@ -22,12 +22,12 @@
         <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity backdrop-blur-sm"></div>
 
         <!-- SIDEBAR -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 w-[260px] md:w-64 bg-teal-950 text-white flex flex-col shadow-2xl z-50 transition-transform duration-300 ease-in-out shrink-0">
-            <div class="p-6 md:p-8 border-b border-teal-900 text-center flex items-center justify-between md:block">
-                <img id="sidebar-logo" src="" alt="Logo" class="w-12 h-12 rounded-full mx-auto mb-3 object-cover bg-teal-900 hidden">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 w-[260px] md:w-64 bg-[#1e3a8a] text-white flex flex-col shadow-2xl z-50 transition-transform duration-300 ease-in-out shrink-0">
+            <div class="p-6 md:p-8 border-b border-blue-900 text-center flex items-center justify-between md:block">
+                <img id="sidebar-logo" src="" alt="Logo" class="w-12 h-12 rounded-full mx-auto mb-3 object-cover bg-blue-900 hidden">
                 <div class="w-full">
-                    <h1 class="text-xl font-black text-orange-400 tracking-tighter italic">MCS MASTER</h1>
-                    <p class="text-[9px] text-teal-400 mt-1 uppercase font-bold tracking-[0.2em]">PROPERTY SYARIAH</p>
+                    <h1 class="text-xl font-black text-white tracking-tighter italic">MCS MASTER</h1>
+                    <p class="text-[9px] text-blue-200 mt-1 uppercase font-bold tracking-[0.2em]">PROPERTY SYARIAH</p>
                 </div>
                 <button id="btn-close-sidebar" class="md:hidden p-2 bg-white/10 rounded-xl hover:bg-white/20">
                     <i data-lucide="x" class="w-5 h-5"></i>
@@ -36,12 +36,12 @@
             
             <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar" id="sidebar-menu"></nav>
 
-            <div class="p-4 border-t border-teal-900 bg-teal-950/50">
-                <div class="flex items-center p-3 rounded-2xl bg-teal-900/40 border border-white/5">
-                    <div id="role-initial" class="w-8 h-8 shrink-0 rounded-full bg-orange-500 flex items-center justify-center mr-3 font-black text-xs border border-white/20 uppercase shadow-inner">S</div>
+            <div class="p-4 border-t border-blue-900 bg-[#172554]">
+                <div class="flex items-center p-3 rounded-2xl bg-blue-900/40 border border-white/5">
+                    <div id="role-initial" class="w-8 h-8 shrink-0 rounded-full bg-[#2845D6] flex items-center justify-center mr-3 font-black text-xs border border-white/20 uppercase shadow-inner">S</div>
                     <div class="overflow-hidden">
                         <p class="font-bold text-[10px] truncate leading-none mb-1">Session Active</p>
-                        <p id="role-display" class="text-teal-400 text-[8px] uppercase font-black italic truncate">Super Admin</p>
+                        <p id="role-display" class="text-blue-200 text-[8px] uppercase font-black italic truncate">Super Admin</p>
                     </div>
                 </div>
                 <button id="btn-logout-sidebar" class="w-full mt-2 py-2 bg-red-900/20 text-red-400 border border-red-900/30 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all flex items-center justify-center group">
@@ -59,7 +59,7 @@
                         <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
                     <h2 id="header-title" class="text-[10px] md:text-xs font-black text-slate-800 uppercase tracking-widest flex items-center truncate">
-                        <i data-lucide="zap" class="w-3 h-3 md:w-4 md:h-4 mr-2 text-teal-600 shrink-0"></i> 
+                        <i data-lucide="zap" class="w-3 h-3 md:w-4 md:h-4 mr-2 text-[#2845D6] shrink-0"></i> 
                         <span id="header-title-text" class="truncate">PIPELINE</span>
                     </h2>
                 </div>
@@ -68,7 +68,7 @@
                         <i data-lucide="log-out" class="w-3 h-3 md:mr-2"></i> 
                         <span id="header-role-text" class="hidden sm:inline">Nama User</span>
                     </button>
-                    <button id="btn-add-lead" class="bg-orange-500 text-white px-3 md:px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg active:scale-95 hover:bg-orange-600 transition-all">
+                    <button id="btn-add-lead" class="bg-[#2845D6] text-white px-3 md:px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg active:scale-95 hover:bg-blue-700 transition-all">
                         <span class="md:hidden"><i data-lucide="plus" class="w-3 h-3"></i></span>
                         <span class="hidden md:inline">+ Add Lead</span>
                     </button>

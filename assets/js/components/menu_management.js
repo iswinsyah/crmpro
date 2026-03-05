@@ -33,7 +33,7 @@ export class MenuManagementComponent {
                         <input type="checkbox" 
                                data-menu-id="${menu.menu_id}"
                                data-role="${role}"
-                               class="h-5 w-5 rounded border-gray-300 text-teal-600 focus:ring-teal-500" 
+                               class="h-5 w-5 rounded border-gray-300 text-[#2845D6] focus:ring-[#2845D6]" 
                                ${hasAccess ? 'checked' : ''} 
                                ${isDisabled ? 'disabled' : ''}>
                     </td>
@@ -70,7 +70,7 @@ export class MenuManagementComponent {
                     </table>
                 </div>
                 <div class="mt-6 text-right">
-                    <button id="save-menu-access" class="px-6 py-3 bg-teal-600 text-white rounded-xl font-black text-sm uppercase tracking-widest shadow-lg hover:bg-teal-700 transition-all active:scale-95">
+                    <button id="save-menu-access" class="px-6 py-3 bg-[#2845D6] text-white rounded-xl font-black text-sm uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all active:scale-95">
                         Simpan Perubahan
                     </button>
                 </div>
