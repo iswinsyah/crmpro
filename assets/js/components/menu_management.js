@@ -17,7 +17,14 @@ export class MenuManagementComponent {
         const rows = this.menus.map(menu => {
             const checkboxes = this.roles.map(role => {
                 const hasAccess = menu.roles.includes(role) || menu.roles.includes('All');
-                const isDisabled = role === 'Super Admin';
+
+                // Super Admin is always checked and disabled.
+                // If current user is a Developer, they cannot change Developer or Super Admin roles.
+                let isDisabled = role === 'Super Admin';
+                if (this.state.currentRole === 'Developer' && (role === 'Developer' || role === 'Super Admin')) {
+                    isDisabled = true;
+                }
+
                 return `
                     <td class="p-4 text-center">
                         <input type="checkbox" 

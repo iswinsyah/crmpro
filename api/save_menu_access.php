@@ -20,9 +20,9 @@ $stmtUser = $pdo->prepare("SELECT role FROM users WHERE id = ?");
 $stmtUser->execute([$user_id]);
 $user = $stmtUser->fetch();
 
-if (!$user || $user['role'] !== 'Super Admin') {
+if (!$user || !in_array($user['role'], ['Super Admin', 'Developer'])) {
     http_response_code(403);
-    echo json_encode(['message' => 'Akses ditolak. Hanya Super Admin yang dapat mengubah hak akses.']);
+    echo json_encode(['message' => 'Akses ditolak. Hanya Super Admin atau Developer yang dapat mengubah hak akses.']);
     exit;
 }
 // --- End Validasi ---
