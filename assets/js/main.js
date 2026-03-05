@@ -93,7 +93,7 @@ if (!loggedInUser) {
             const newHash = window.location.hash.substring(1);
             switchTab(newHash || 'pipeline');
         });
-    });
+    }
 
     function checkImpersonation() {
         const superAdminSession = localStorage.getItem('mgo_super_admin_session');
