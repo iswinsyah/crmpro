@@ -41,7 +41,8 @@ export class ImpersonationComponent {
                 <h2 class="text-xl font-black text-slate-800 uppercase tracking-wider">Mode Penyamaran (Login As)</h2>
                 <p class="text-sm text-slate-500 mt-1">Pilih pengguna untuk login sebagai mereka dan melihat aplikasi dari sudut pandang mereka untuk debugging.</p>
                 <div class="mt-4">
-                    <input type="text" id="user-search-input" placeholder="Cari nama atau username..." class="w-full bg-slate-50 border p-3 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-
+                    <input type="text" id="user-search-input" placeholder="Cari nama atau username..." class="w-full bg-slate-50 border p-3 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-[#2845D6]">
+                </div>
                 <div class="overflow-x-auto mt-6">
                     <table class="w-full text-sm text-left">
                         <thead class="bg-slate-50 text-xs text-slate-500 uppercase font-black tracking-wider">
