@@ -14,12 +14,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = Object.fromEntries(formData.entries());
 
         try {
-            const response = await ApiService.login(data.username, data.password);
+            // Langsung panggil API login yang baru
+            const response = await ApiService.post('login.php', data);
             
+            const { user } = response;
             // Simpan data user di localStorage untuk digunakan di halaman utama
-            localStorage.setItem('mgo_user', JSON.stringify(response.user));
-            
-            window.location.href = 'index.php'; // Redirect to dashboard
+            localStorage.setItem('mgo_user', JSON.stringify(user));
+
+            if (user.role === 'Developer' && user.is_first_login) {
+                window.location.href = 'index.php#settings'; // Redirect ke halaman setting
+            } else {
+                window.location.href = 'index.php'; // Redirect ke dashboard seperti biasa
+            }
         } catch (error) {
             alert('Login Gagal: ' + error.message);
             loginButton.innerHTML = originalButtonText;

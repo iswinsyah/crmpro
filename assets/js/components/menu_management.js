@@ -1,8 +1,9 @@
+import { ApiService } from '../api.js';
+
 export class MenuManagementComponent {
     constructor(elementId, menus) {
         this.container = document.getElementById(elementId);
-        // Ambil semua menu, kecuali menu 'Menu Management' itu sendiri
-        this.menus = menus.filter(m => m.id !== 'menu-management'); 
+        this.menus = menus.filter(m => m.menu_id !== 'menu-management'); 
         this.roles = ['Agent Freelance', 'Admin CS', 'Developer', 'Super Admin'];
     }
 
@@ -14,13 +15,14 @@ export class MenuManagementComponent {
     renderTable() {
         const rows = this.menus.map(menu => {
             const checkboxes = this.roles.map(role => {
-                // Cek apakah menu ini bisa diakses oleh role yang bersangkutan
                 const hasAccess = menu.roles.includes(role) || menu.roles.includes('All');
-                // Super Admin selalu punya akses dan tidak bisa diubah
                 const isDisabled = role === 'Super Admin';
                 return `
                     <td class="p-4 text-center">
-                        <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-teal-600 focus:ring-teal-500" 
+                        <input type="checkbox" 
+                               data-menu-id="${menu.menu_id}"
+                               data-role="${role}"
+                               class="h-5 w-5 rounded border-gray-300 text-teal-600 focus:ring-teal-500" 
                                ${hasAccess ? 'checked' : ''} 
                                ${isDisabled ? 'disabled' : ''}>
                     </td>
@@ -30,8 +32,8 @@ export class MenuManagementComponent {
             return `
                 <tr class="border-b hover:bg-slate-50/50 transition-colors">
                     <td class="p-4 font-medium text-slate-800 flex items-center">
-                        <i data-lucide="${menu.icon}" class="w-4 h-4 mr-3 text-slate-400"></i>
-                        <span>${menu.label}</span>
+                        <i data-lucide="${menu.icon}" class="w-4 h-4 mr-3 text-slate-500"></i>
+                        <span class="font-bold">${menu.label}</span>
                     </td>
                     ${checkboxes}
                 </tr>
@@ -70,13 +72,55 @@ export class MenuManagementComponent {
             window.lucide.createIcons();
         }
 
-        // Untuk saat ini, tombol simpan belum memiliki fungsi.
-        // Ini bisa kita implementasikan di tahap selanjutnya.
         const saveButton = document.getElementById('save-menu-access');
         if (saveButton) {
-            saveButton.addEventListener('click', () => {
-                alert('Fungsi penyimpanan hak akses belum diimplementasikan.');
-            });
+            saveButton.addEventListener('click', () => this.saveChanges());
+        }
+    }
+
+    async saveChanges() {
+        const saveButton = document.getElementById('save-menu-access');
+        const originalButtonText = saveButton.innerHTML;
+        saveButton.innerHTML = 'Menyimpan...';
+        saveButton.disabled = true;
+
+        const menuAccessMap = {};
+
+        // Inisialisasi map dengan semua menu
+        this.menus.forEach(menu => {
+            menuAccessMap[menu.menu_id] = [];
+        });
+
+        // Kumpulkan data dari checkbox yang dicentang
+        const checkedBoxes = this.container.querySelectorAll('input[type="checkbox"]:checked');
+        checkedBoxes.forEach(box => {
+            const menuId = box.dataset.menuId;
+            const role = box.dataset.role;
+            if (menuAccessMap[menuId]) {
+                menuAccessMap[menuId].push(role);
+            }
+        });
+
+        // Super Admin selalu punya akses
+        Object.keys(menuAccessMap).forEach(menuId => {
+            if (!menuAccessMap[menuId].includes('Super Admin')) {
+                menuAccessMap[menuId].push('Super Admin');
+            }
+        });
+
+        const payload = Object.keys(menuAccessMap).map(menuId => ({
+            menu_id: menuId,
+            roles: menuAccessMap[menuId]
+        }));
+
+        try {
+            const response = await ApiService.saveMenuAccess(payload);
+            alert(response.message);
+        } catch (error) {
+            alert('Gagal menyimpan: ' + error.message);
+        } finally {
+            saveButton.innerHTML = originalButtonText;
+            saveButton.disabled = false;
         }
     }
 }
