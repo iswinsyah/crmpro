@@ -331,7 +331,7 @@ if (!loggedInUser) {
             aiEngineConfigComponent.render();
         } else if (tabId === 'tasks') {
             mainContent.innerHTML = `<section id="tab-tasks" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
-            tasksComponent = new TasksComponent('tab-tasks');
+            tasksComponent = new TasksComponent('tab-tasks', state);
             tasksComponent.render();
         } else if (tabId === 'calendar') {
             mainContent.innerHTML = `<section id="tab-calendar" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
