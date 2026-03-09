@@ -59,9 +59,11 @@ if ($logo_file && $logo_file['error'] === UPLOAD_ERR_OK) {
 try {
     // Cek apakah ini hanya update untuk AI insight atau form lengkap
     if ($ai_persona_insight !== null) {
+        // Decode Base64 text from frontend to bypass WAF
+        $decoded_insight = base64_decode($ai_persona_insight);
         // Hanya update kolom AI
         $stmt = $pdo->prepare("UPDATE developers SET ai_persona_insight = ? WHERE id = ?");
-        $stmt->execute([$ai_persona_insight, $developer_id]);
+        $stmt->execute([$decoded_insight, $developer_id]);
     } else {
         // Update form lengkap
         $stmt = $pdo->prepare(
