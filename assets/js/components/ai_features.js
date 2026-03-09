@@ -326,6 +326,7 @@ export class PersonaInsightComponent {
             resultContainer.classList.remove('hidden');
             
         } catch (error) {
+            console.error("Error saat analisa persona:", error); // Tambah log untuk debug
             alert("Gagal menganalisa persona: " + error.message);
         } finally {
             btn.innerHTML = originalText;
