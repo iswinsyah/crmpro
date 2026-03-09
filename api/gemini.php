@@ -20,8 +20,8 @@ if (!defined('GEMINI_API_KEY') || empty(GEMINI_API_KEY) || GEMINI_API_KEY === 'P
     exit;
 }
 
-// Gunakan model Gemini 1.5 Flash (Cepat & Hemat)
-$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . GEMINI_API_KEY;
+// Menggunakan model gemini-2.5-flash sesuai permintaan
+$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . GEMINI_API_KEY;
 
 $payload = [
     "contents" => [
