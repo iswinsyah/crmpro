@@ -11,7 +11,7 @@ export class ReminderFollowupComponent {
         const followupLeads = this.state.leads.filter(l => l.status === 'FOLLOW_UP');
 
         const listHtml = followupLeads.length > 0 ? followupLeads.map(lead => `
-            <div class="p-4 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-slate-50 transition-colors gap-3 md:gap-4 cursor-pointer" onclick="document.dispatchEvent(new CustomEvent('lead-selected', { detail: ${JSON.stringify(lead).replace(/"/g, '&quot;')} }))">
+            <div class="p-4 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-slate-50 transition-colors gap-3 md:gap-4 cursor-pointer" data-lead-id="${lead.id}">
                 <div class="flex items-start sm:items-center space-x-3 md:space-x-4">
                     <div class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center shrink-0 bg-orange-100 text-orange-600"><i data-lucide="clock" class="w-4 h-4 md:w-[18px] md:h-[18px]"></i></div>
                     <div>
@@ -39,6 +39,21 @@ export class ReminderFollowupComponent {
                 </div>
             </div>
         `;
+        this.attachEventListeners();
         if(window.lucide) window.lucide.createIcons();
+    }
+
+    attachEventListeners() {
+        const leadElements = this.container.querySelectorAll('[data-lead-id]');
+        leadElements.forEach(el => {
+            el.addEventListener('click', () => {
+                const leadId = el.dataset.leadId;
+                // Find the lead from the state, which has the 'owner' property
+                const lead = this.state.leads.find(l => l.id == leadId);
+                if (lead) {
+                    document.dispatchEvent(new CustomEvent('lead-selected', { detail: lead }));
+                }
+            });
+        });
     }
 }

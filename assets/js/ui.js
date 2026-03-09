@@ -64,18 +64,13 @@ export class UI {
     }
 
     openDrawer(lead, currentRole) {
-        // JURUS PAMUNGKAS: Debugging & Robust Check
-        const user = JSON.parse(localStorage.getItem('mgo_user')) || {};
-        
-        // Pastikan ID dibandingkan secara loose (string vs number) menggunakan ==
-        const isOwner = (lead.owner_id == user.id);
-        
-        // Developer & Super Admin selalu punya akses penuh
+        // Comprehensive Check: Standardize authorization logic.
+        // The `lead.owner` property is set to 'Self' in api.js if the user is the owner.
+        const isOwner = lead.owner === 'Self';
         const isAdmin = (currentRole === 'Developer' || currentRole === 'Super Admin');
-        
         const canManage = (isAdmin || isOwner);
 
-        console.log(`[Drawer Debug] LeadID: ${lead.id}, OwnerID: ${lead.owner_id}, UserID: ${user.id}, CanManage: ${canManage}`);
+        console.log(`[Drawer Auth] LeadID: ${lead.id}, Is Owner: ${isOwner}, Role: ${currentRole}, Can Manage: ${canManage}`);
         
         const drawerHTML = `
         <div id="leadDetailModal" class="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-sm">
