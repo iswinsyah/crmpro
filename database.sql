@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS leads (
     owner_id INT NOT NULL,     -- KUNCI AKSES: Menandakan milik agen siapa
     name VARCHAR(100) NOT NULL,
     nik VARCHAR(20),
-    phone VARCHAR(20) NOT NULL,
+    phone VARCHAR(20),
     job VARCHAR(100),
     channel VARCHAR(50),
     segment VARCHAR(50),
