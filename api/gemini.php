@@ -20,7 +20,7 @@ if (!defined('GEMINI_API_KEY') || empty(GEMINI_API_KEY) || GEMINI_API_KEY === 'P
     exit;
 }
 
-// Menggunakan model gemini-1.5-flash (Versi Stabil)
+// Menggunakan model gemini-1.5-flash (Versi Stabil & Umum)
 $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . GEMINI_API_KEY;
 
 $payload = [
@@ -54,10 +54,11 @@ if ($curlError) {
     exit;
 }
 
-if ($httpCode !== 200 || strpos($response, '"error"') !== false) {
-    http_response_code($httpCode >= 400 ? $httpCode : 500);
+if ($httpCode !== 200) {
+    // Jangan set http_response_code ke 404 agar frontend tidak bingung, kirim 500 dengan pesan jelas
+    http_response_code(500); 
     $errorDetails = json_decode($response, true);
-    $specificMessage = $errorDetails['error']['message'] ?? 'Unknown error from Google API. Check API Key, Billing, and Enabled APIs in Google Cloud Console.';
+    $specificMessage = $errorDetails['error']['message'] ?? "Google API Error ($httpCode): " . $response;
     echo json_encode(["error" => $specificMessage]);
     exit;
 }

@@ -1,7 +1,7 @@
 /**
  * API Service Module
  */
-const API_BASE_URL = '/api'; // Disesuaikan untuk server produksi (Hostinger)
+const API_BASE_URL = 'api'; // Menggunakan path relatif agar aman di sub-folder/localhost
 
 export class ApiService {
     
