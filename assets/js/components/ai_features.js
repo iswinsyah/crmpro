@@ -87,12 +87,10 @@ export class CreativeSuiteComponent {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     <div class="bg-white p-6 md:p-10 rounded-[2rem] border border-slate-200 shadow-sm">
                         <h3 class="text-xs md:text-sm font-black text-slate-800 mb-6 uppercase tracking-widest italic text-center md:text-left">AI Content Parameter</h3>
-                        <div id="persona-context-indicator" class="hidden mb-4 p-3 bg-teal-50 border border-teal-200 rounded-xl text-center">
-                            <p class="text-[9px] font-bold text-teal-700">💡 Menggunakan konteks dari <strong class="underline">Persona Insight</strong> yang tersimpan.</p>
-                        </div>
                         <div class="space-y-4">
+                            <textarea id="topic-from-calendar" placeholder="Paste topik dari Kalender Konten di sini..." class="w-full bg-teal-50 border-2 border-dashed border-teal-200 rounded-2xl p-4 h-24 text-xs font-medium resize-none focus:ring-2 focus:ring-teal-500 outline-none shadow-inner"></textarea>
                             <select id="creative-angle" class="w-full bg-slate-50 border p-4 rounded-2xl text-[10px] font-bold outline-none"><option>Angle: Syariah Murni Tanpa Sita</option><option>Angle: Rumah Pertama Milenial</option><option>Angle: Investasi Properti Menguntungkan</option></select>
-                            <textarea id="creative-input" placeholder="Detail unit, poin promo, atau kendala prospek..." class="w-full bg-slate-50 border rounded-2xl p-4 h-32 md:h-40 text-xs font-medium resize-none focus:ring-2 focus:ring-teal-500 outline-none shadow-inner"></textarea>
+                            <textarea id="creative-input" placeholder="Detail TAMBAHAN: Poin promo, spesifikasi unit, atau kendala prospek..." class="w-full bg-slate-50 border rounded-2xl p-4 h-32 md:h-40 text-xs font-medium resize-none focus:ring-2 focus:ring-teal-500 outline-none shadow-inner"></textarea>
                             <button id="btn-generate-creative" class="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl font-black text-[10px] uppercase shadow-xl transition-all active:scale-95">Generate Konten Kreatif</button>
                         </div>
                     </div>
@@ -107,11 +105,6 @@ export class CreativeSuiteComponent {
             </div>
         `;
         this.setupListeners();
-
-        if (savedInsight) {
-            this.container.querySelector('#persona-context-indicator').classList.remove('hidden');
-        }
-
         if(window.lucide) window.lucide.createIcons();
     }
     setupListeners() {
@@ -133,9 +126,15 @@ export class CreativeSuiteComponent {
     async generate() {
         const btn = this.container.querySelector('#btn-generate-creative');
         const res = this.container.querySelector('#creative-result');
+        const topic = this.container.querySelector('#topic-from-calendar').value;
         const angle = this.container.querySelector('#creative-angle').value;
         const input = this.container.querySelector('#creative-input').value;
         
+        if (!topic) {
+            alert('Silakan paste topik dari Kalender Konten terlebih dahulu.');
+            return;
+        }
+
         const originalText = btn.innerText;
         btn.innerText = "Processing AI...";
         btn.disabled = true;
@@ -155,6 +154,7 @@ ${personaInsight}
 
 **TUGAS ANDA:**
 Buat konten kreatif untuk properti syariah dengan detail sebagai berikut:
+- **Topik Utama:** "${topic}"
 - **Mode Konten:** ${this.mode}
 - **Angle/Sudut Pandang:** ${angle}
 - **Detail Tambahan dari User:** ${input || 'Tidak ada.'}
