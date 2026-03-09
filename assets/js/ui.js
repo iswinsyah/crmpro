@@ -64,15 +64,18 @@ export class UI {
     }
 
     openDrawer(lead, currentRole) {
-        // ================= JURUS PAMUNGKAS V2 (DIAGNOSTIC MODE) =================
-        // Kita akan paksa tombol muncul untuk mendiagnosa masalah.
+        // --- Final Authorization Logic (Direct Check Method) ---
+        // To solve the persistent button visibility issue, we will perform a direct check here,
+        // instead of only relying on the 'lead.owner' property which might get lost.
 
-        const isOwner = lead.owner === 'Self';
+        const user = JSON.parse(localStorage.getItem('mgo_user')) || {};
+
+        // 1. Check if the current user is the owner of the lead (using loose equality for safety)
+        const isOwner = (lead.owner_id == user.id);
+        // 2. Check if the current user has an admin role that can manage any lead
         const isAdmin = (currentRole === 'Developer' || currentRole === 'Super Admin');
-        const canManage = (isAdmin || isOwner) || true; // <-- INI ADALAH KODE DIAGNOSTIK, SEMENTARA!
-
-        console.log(`[DIAGNOSTIC] Membuka drawer untuk Lead:`, lead);
-        console.log(`[DIAGNOSTIC] Auth Check: isOwner=${isOwner}, isAdmin=${isAdmin}. Hasil akhir (dipaksa): canManage=${canManage}`);
+        // 3. The user can manage if they are an admin OR the owner
+        const canManage = isAdmin || isOwner;
         
         const drawerHTML = `
         <div id="leadDetailModal" class="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-sm">
