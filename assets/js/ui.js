@@ -64,13 +64,15 @@ export class UI {
     }
 
     openDrawer(lead, currentRole) {
-        // Comprehensive Check: Standardize authorization logic.
-        // The `lead.owner` property is set to 'Self' in api.js if the user is the owner.
+        // ================= JURUS PAMUNGKAS V2 (DIAGNOSTIC MODE) =================
+        // Kita akan paksa tombol muncul untuk mendiagnosa masalah.
+
         const isOwner = lead.owner === 'Self';
         const isAdmin = (currentRole === 'Developer' || currentRole === 'Super Admin');
-        const canManage = (isAdmin || isOwner);
+        const canManage = (isAdmin || isOwner) || true; // <-- INI ADALAH KODE DIAGNOSTIK, SEMENTARA!
 
-        console.log(`[Drawer Auth] LeadID: ${lead.id}, Is Owner: ${isOwner}, Role: ${currentRole}, Can Manage: ${canManage}`);
+        console.log(`[DIAGNOSTIC] Membuka drawer untuk Lead:`, lead);
+        console.log(`[DIAGNOSTIC] Auth Check: isOwner=${isOwner}, isAdmin=${isAdmin}. Hasil akhir (dipaksa): canManage=${canManage}`);
         
         const drawerHTML = `
         <div id="leadDetailModal" class="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-sm">

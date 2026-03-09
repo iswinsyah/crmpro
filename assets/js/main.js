@@ -4,7 +4,6 @@ import { PipelineComponent } from './components/pipeline.js';
 import { PortfolioComponent } from './components/portfolio.js';
 import { ReportingComponent } from './components/reporting.js';
 import { ClientManagementComponent } from './components/client_management.js';
-import { ReminderFollowupComponent } from './components/reminder.js';
 import { LeadAnalyzerComponent, CreativeSuiteComponent, ObjectionGenComponent, PersonaInsightComponent, AiEngineConfigComponent } from './components/ai_features.js';
 import { TasksComponent } from './components/tasks.js';
 import { CalendarComponent } from './components/calendar.js';
@@ -32,7 +31,6 @@ if (!loggedInUser) {
     let portfolioComponent = null;
     let reportingComponent = null;
     let clientManagementComponent = null;
-    let reminderFollowupComponent = null;
     let leadAnalyzerComponent = null;
     let creativeSuiteComponent = null;
     let objectionGenComponent = null;
@@ -311,10 +309,6 @@ if (!loggedInUser) {
             mainContent.innerHTML = `<section id="tab-client-management" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             clientManagementComponent = new ClientManagementComponent('tab-client-management');
             clientManagementComponent.render();
-        } else if (tabId === 'reminder-followup') {
-            mainContent.innerHTML = `<section id="tab-reminder-followup" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
-            reminderFollowupComponent = new ReminderFollowupComponent('tab-reminder-followup', state);
-            reminderFollowupComponent.render();
         } else if (tabId === 'reporting') {
             mainContent.innerHTML = `<section id="tab-reporting" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             reportingComponent = new ReportingComponent('tab-reporting', state);
@@ -434,7 +428,7 @@ if (!loggedInUser) {
     function assignCategoriesToMenus(menus) {
         const categoryMap = {
             'portfolio': 'Strategy & Overview', 'validation': 'Strategy & Overview', 'client-management': 'Strategy & Overview',
-            'pipeline': 'Operational Area', 'reminder-followup': 'Operational Area', 'reporting': 'Operational Area',
+            'pipeline': 'Operational Area', 'reporting': 'Operational Area',
             'tasks': 'Productivity Tools', 'calendar': 'Productivity Tools',
             'ai-lead': 'AI Assistants', 'ai-creative': 'AI Assistants', 'ai-objection': 'AI Assistants',
             'persona': 'Strategy & Setup', 'ai-engine': 'Strategy & Setup', 'menu-management': 'Strategy & Setup', 'impersonation': 'Strategy & Setup', 'settings': 'Strategy & Setup',

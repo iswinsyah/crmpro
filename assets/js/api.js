@@ -48,7 +48,10 @@ export class ApiService {
             
             // Menandai lead milik user sendiri agar tombol hapus & edit muncul
             return leads.map(lead => {
-                if (lead.owner_id == userId) lead.owner = 'Self';
+                if (lead.owner_id == userId) {
+                    lead.owner = 'Self';
+                    console.log(`[API Check] Lead ID ${lead.id} ditandai sebagai milik sendiri.`);
+                }
                 return lead;
             });
         } catch (error) {
