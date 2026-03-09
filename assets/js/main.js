@@ -4,7 +4,7 @@ import { PipelineComponent } from './components/pipeline.js';
 import { PortfolioComponent } from './components/portfolio.js';
 import { ReportingComponent } from './components/reporting.js';
 import { ClientManagementComponent } from './components/client_management.js';
-import { LeadAnalyzerComponent, CreativeSuiteComponent, ObjectionGenComponent, PersonaInsightComponent, AiEngineConfigComponent } from './components/ai_features.js';
+import { LeadAnalyzerComponent, CreativeSuiteComponent, ObjectionGenComponent, PersonaInsightComponent, AiEngineConfigComponent, ContentCalendarGeneratorComponent } from './components/ai_features.js';
 import { TasksComponent } from './components/tasks.js';
 import { CalendarComponent } from './components/calendar.js';
 import { ValidationComponent } from './components/validation.js';
@@ -35,6 +35,7 @@ if (!loggedInUser) {
     let creativeSuiteComponent = null;
     let objectionGenComponent = null;
     let personaInsightComponent = null;
+    let contentCalendarGeneratorComponent = null;
     let aiEngineConfigComponent = null;
     let tasksComponent = null;
     let calendarComponent = null;
@@ -319,7 +320,7 @@ if (!loggedInUser) {
             leadAnalyzerComponent.render();
         } else if (tabId === 'ai-creative') {
             mainContent.innerHTML = `<section id="tab-ai-creative" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
-            creativeSuiteComponent = new CreativeSuiteComponent('tab-ai-creative');
+            creativeSuiteComponent = new CreativeSuiteComponent('tab-ai-creative', state);
             creativeSuiteComponent.render();
         } else if (tabId === 'ai-objection') {
             mainContent.innerHTML = `<section id="tab-ai-objection" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
@@ -329,6 +330,10 @@ if (!loggedInUser) {
             mainContent.innerHTML = `<section id="tab-persona" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             personaInsightComponent = new PersonaInsightComponent('tab-persona', state);
             personaInsightComponent.render();
+        } else if (tabId === 'ai-content-calendar') {
+            mainContent.innerHTML = `<section id="tab-ai-content-calendar" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
+            contentCalendarGeneratorComponent = new ContentCalendarGeneratorComponent('tab-ai-content-calendar', state);
+            contentCalendarGeneratorComponent.render();
         } else if (tabId === 'ai-engine') {
             mainContent.innerHTML = `<section id="tab-ai-engine" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
             aiEngineConfigComponent = new AiEngineConfigComponent('tab-ai-engine');
@@ -430,7 +435,7 @@ if (!loggedInUser) {
             'portfolio': 'Strategy & Overview', 'validation': 'Strategy & Overview', 'client-management': 'Strategy & Overview',
             'pipeline': 'Operational Area', 'reporting': 'Operational Area',
             'tasks': 'Productivity Tools', 'calendar': 'Productivity Tools',
-            'ai-lead': 'AI Assistants', 'ai-creative': 'AI Assistants', 'ai-objection': 'AI Assistants',
+            'ai-lead': 'AI Assistants', 'ai-creative': 'AI Assistants', 'ai-objection': 'AI Assistants', 'ai-content-calendar': 'AI Assistants',
             'persona': 'Strategy & Setup', 'ai-engine': 'Strategy & Setup', 'menu-management': 'Strategy & Setup', 'impersonation': 'Strategy & Setup', 'settings': 'Strategy & Setup',
             'dashboard': 'Operational Area', 'leads-management': 'Operational Area'
         };

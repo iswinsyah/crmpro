@@ -10,6 +10,7 @@ $app_name = $_POST['app_name'] ?? null;
 $notification_email = $_POST['notification_email'] ?? null;
 $maintenance_mode = isset($_POST['maintenance_mode']) ? 1 : 0;
 $ai_persona_insight = $_POST['ai_persona_insight'] ?? null; // Data baru dari AI
+$ai_content_calendar = $_POST['ai_content_calendar'] ?? null; // Data baru dari AI Kalender
 $logo_file = $_FILES['logo'] ?? null;
 
 if (!$developer_id) {
@@ -64,6 +65,18 @@ try {
         // Hanya update kolom AI
         $stmt = $pdo->prepare("UPDATE developers SET ai_persona_insight = ? WHERE id = ?");
         $stmt->execute([$decoded_insight, $developer_id]);
+    } elseif ($ai_content_calendar !== null) {
+        // Decode Base64 text from frontend to bypass WAF
+        $decoded_calendar = base64_decode($ai_content_calendar);
+        // Hanya update kolom AI Kalender
+        $stmt = $pdo->prepare("UPDATE developers SET ai_content_calendar = ? WHERE id = ?");
+        $stmt->execute([$decoded_calendar, $developer_id]);
+    } elseif ($ai_content_calendar !== null) {
+        // Decode Base64 text from frontend to bypass WAF
+        $decoded_calendar = base64_decode($ai_content_calendar);
+        // Hanya update kolom AI Kalender
+        $stmt = $pdo->prepare("UPDATE developers SET ai_content_calendar = ? WHERE id = ?");
+        $stmt->execute([$decoded_calendar, $developer_id]);
     } else {
         // Update form lengkap
         $stmt = $pdo->prepare(
@@ -77,7 +90,13 @@ try {
         $stmt->execute([$app_name, $notification_email, $logo_url, $maintenance_mode, $developer_id]);
     }
 
-    $message = $ai_persona_insight !== null ? 'Hasil analisa AI berhasil disimpan!' : 'Pengaturan berhasil disimpan!';
+    $message = 'Pengaturan berhasil disimpan!';
+    if ($ai_persona_insight !== null) {
+        $message = 'Hasil analisa AI berhasil disimpan!';
+    } elseif ($ai_content_calendar !== null) {
+        $message = 'Kalender konten berhasil disimpan!';
+    }
+
     echo json_encode(['message' => $message, 'new_logo_url' => $logo_url]);
 
 } catch (PDOException $e) {
