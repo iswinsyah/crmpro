@@ -64,17 +64,18 @@ export class UI {
     }
 
     openDrawer(lead, currentRole) {
-        // --- Final Authorization Logic (Direct Check Method) ---
-        // To solve the persistent button visibility issue, we will perform a direct check here,
-        // instead of only relying on the 'lead.owner' property which might get lost.
-
+        // --- Authorization Logic (Synchronized with API) ---
         const user = JSON.parse(localStorage.getItem('mgo_user')) || {};
 
-        // 1. Check if the current user is the owner of the lead (using loose equality for safety)
-        const isOwner = (lead.owner_id == user.id);
-        // 2. Check if the current user has an admin role that can manage any lead
+        // 1. Cek apakah API sudah menandai ini sebagai 'Self' (Paling Akurat)
+        const isMarkedSelf = lead.owner === 'Self';
+        
+        // 2. Cek manual ID sebagai backup (Loose equality untuk menangani string vs number)
+        const isIdMatch = (lead.owner_id == user.id);
+
+        // 3. Gabungkan logika
+        const isOwner = isMarkedSelf || isIdMatch;
         const isAdmin = (currentRole === 'Developer' || currentRole === 'Super Admin');
-        // 3. The user can manage if they are an admin OR the owner
         const canManage = isAdmin || isOwner;
         
         const drawerHTML = `
