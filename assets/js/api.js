@@ -8,11 +8,12 @@ export class ApiService {
     static BASE_URL = API_BASE_URL;
     
     static async handleResponse(response) {
+        const json = await response.json().catch(() => ({ message: 'Invalid JSON response from server.' }));
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `HTTP Error: ${response.status}`);
+            const errorMessage = json.error || json.message || `HTTP Error: ${response.status}`;
+            throw new Error(errorMessage);
         }
-        return await response.json();
+        return json;
     }
 
     static async get(endpoint) {

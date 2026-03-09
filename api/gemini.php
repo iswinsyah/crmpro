@@ -9,12 +9,14 @@ $data = json_decode(file_get_contents("php://input"), true);
 $prompt = $data['prompt'] ?? '';
 
 if (empty($prompt)) {
+    http_response_code(400);
     echo json_encode(["error" => "Prompt is required"]);
     exit;
 }
 
 if (!defined('GEMINI_API_KEY') || empty(GEMINI_API_KEY) || GEMINI_API_KEY === 'PASTE_API_KEY_DISINI') {
-    echo json_encode(["error" => "API Key belum disetting di server"]);
+    http_response_code(500);
+    echo json_encode(["error" => "API Key belum disetting di server."]);
     exit;
 }
 
@@ -43,15 +45,24 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$curlError = curl_error($ch);
 curl_close($ch);
 
-if ($httpCode !== 200) {
-    echo json_encode(["error" => "Gemini API Error", "details" => json_decode($response)]);
+if ($curlError) {
+    http_response_code(500);
+    echo json_encode(["error" => "cURL Error: " . $curlError]);
+    exit;
+}
+
+if ($httpCode !== 200 || strpos($response, '"error"') !== false) {
+    http_response_code($httpCode >= 400 ? $httpCode : 500);
+    $errorDetails = json_decode($response, true);
+    $specificMessage = $errorDetails['error']['message'] ?? 'Unknown error from Google API. Check API Key, Billing, and Enabled APIs in Google Cloud Console.';
+    echo json_encode(["error" => $specificMessage]);
     exit;
 }
 
 $decoded = json_decode($response, true);
-$text = $decoded['candidates'][0]['content']['parts'][0]['text'] ?? "Maaf, AI tidak memberikan respons.";
+$text = $decoded['candidates'][0]['content']['parts'][0]['text'] ?? "Maaf, AI tidak memberikan respons yang dapat dibaca.";
 
 echo json_encode(["result" => $text]);
-?>
