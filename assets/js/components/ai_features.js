@@ -327,29 +327,40 @@ export class PersonaInsightComponent {
 
         if (isNewResult) {
             saveButton.classList.remove('hidden');
+            saveButton.style.display = 'inline-flex'; // Paksa tampil
             saveButton.onclick = () => this.saveResult();
         } else {
             saveButton.classList.add('hidden');
+            saveButton.style.display = 'none';
         }
         if(window.lucide) window.lucide.createIcons();
     }
 
     async saveResult() {
         const saveButton = this.container.querySelector('#btn-save-persona');
+        const originalContent = saveButton.innerHTML; // Simpan icon & text asli
         saveButton.innerText = 'Menyimpan...';
         saveButton.disabled = true;
 
         const formData = new FormData();
         formData.append('developer_id', this.state.currentUser.developer_id);
+        formData.append('user_id', this.state.currentUser.id); // FIX: Tambahkan User ID agar lolos validasi server
         formData.append('ai_persona_insight', this.lastAIResult);
 
         try {
-            await fetch(`${ApiService.BASE_URL}/save_developer_settings.php`, { method: 'POST', body: formData });
+            const response = await fetch(`${ApiService.BASE_URL}/save_developer_settings.php`, { method: 'POST', body: formData });
+            const result = await ApiService.handleResponse(response); // Handle error response dengan benar
+            
             alert('Hasil analisa berhasil disimpan!');
             saveButton.classList.add('hidden');
+            
+            // Update state lokal agar jika pindah tab, data tetap ada
+            if (!this.state.developerSettings) this.state.developerSettings = {};
+            this.state.developerSettings.ai_persona_insight = this.lastAIResult;
+
         } catch (error) {
             alert('Gagal menyimpan hasil: ' + error.message);
-            saveButton.innerText = 'Simpan Hasil Analisa Ini';
+            saveButton.innerHTML = originalContent; // Kembalikan icon & text
             saveButton.disabled = false;
         }
     }
