@@ -45,11 +45,11 @@ export class ValidationComponent {
                     <a href="/${dev.bukti_pembayaran}" target="_blank" class="text-xs font-bold text-teal-600 hover:underline">Lihat Bukti</a>
                 </td>
                 <td class="p-4 flex items-center space-x-2">
-                    <button data-action="approve" class="action-btn bg-green-100 text-green-700 hover:bg-green-200">
-                        <i data-lucide="check" class="w-4 h-4"></i>
+                    <button data-action="approve" class="action-btn bg-green-100 text-green-700 hover:bg-green-200 px-3 py-2 rounded-lg text-xs font-bold flex items-center shadow-sm transition-all">
+                        <i data-lucide="check" class="w-4 h-4 mr-1.5"></i> Terima
                     </button>
-                    <button data-action="reject" class="action-btn bg-red-100 text-red-700 hover:bg-red-200">
-                        <i data-lucide="x" class="w-4 h-4"></i>
+                    <button data-action="reject" class="action-btn bg-red-100 text-red-700 hover:bg-red-200 px-3 py-2 rounded-lg text-xs font-bold flex items-center shadow-sm transition-all">
+                        <i data-lucide="x" class="w-4 h-4 mr-1.5"></i> Tolak
                     </button>
                 </td>
             </tr>

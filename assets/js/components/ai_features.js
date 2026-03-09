@@ -292,8 +292,12 @@ export class PersonaInsightComponent {
 
             const response = await ApiService.generateAIContent(prompt);
             
+            // Defensive check: Pastikan AI memberikan respon yang bisa dibaca (string).
+            // Kadang AI mengembalikan object {result: "teks"}, kadang hanya "teks" saja.
+            const aiText = response.result || (typeof response === 'string' ? response : '');
+
             // Format simple markdown to HTML breaks
-            const formattedResult = response.result.replace(/\n/g, '<br>');
+            const formattedResult = aiText.replace(/\n/g, '<br>');
             
             contentContainer.innerHTML = formattedResult;
             resultContainer.classList.remove('hidden');
