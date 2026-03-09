@@ -106,6 +106,24 @@ export class ApiService {
         }
     }
 
+    static async updateLeadData(leadData) {
+        try {
+            const formData = new FormData();
+            for (const key in leadData) {
+                formData.append(key, leadData[key]);
+            }
+
+            const response = await fetch(`${API_BASE_URL}/leads.php?action=update_data`, {
+                method: 'POST',
+                body: formData
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error("API Error (updateLeadData):", error);
+            throw error;
+        }
+    }
+
     static async generateAIContent(prompt) {
         try {
             const response = await fetch(`${API_BASE_URL}/gemini.php`, {

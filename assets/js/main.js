@@ -188,6 +188,11 @@ if (!loggedInUser) {
             await refreshData();
             switchTab(state.currentTab); // Re-render tab aktif
         });
+        // Listener baru: Saat lead diedit, refresh data
+        document.addEventListener('lead-updated', async () => {
+            await refreshData();
+            switchTab(state.currentTab);
+        });
     }
 
     function setupUserUI() {

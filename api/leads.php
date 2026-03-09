@@ -76,5 +76,29 @@ if ($action === 'create') {
         http_response_code(500);
         echo json_encode(['message' => 'Gagal update status.']);
     }
+} elseif ($action === 'update_data') {
+    // Handle Update Data Lead (Edit)
+    $id = $_POST['id'] ?? null;
+    $name = $_POST['name'] ?? null;
+    $nik = $_POST['nik'] ?? null;
+    $phone = $_POST['phone'] ?? null;
+    $job = $_POST['job'] ?? null;
+    $channel = $_POST['channel'] ?? null;
+    $segment = $_POST['segment'] ?? null;
+
+    if (!$id || !$name || !$nik) {
+        http_response_code(400);
+        echo json_encode(['message' => 'ID, Nama, dan NIK wajib diisi.']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("UPDATE leads SET name = ?, nik = ?, phone = ?, job = ?, channel = ?, segment = ? WHERE id = ?");
+        $stmt->execute([$name, $nik, $phone, $job, $channel, $segment, $id]);
+        echo json_encode(['message' => 'Data lead berhasil diperbarui.']);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['message' => 'Gagal update data lead.']);
+    }
 }
 ?>
