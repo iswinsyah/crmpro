@@ -61,55 +61,49 @@ if ($logo_file && $logo_file['error'] === UPLOAD_ERR_OK) {
 }
 
 try {
-    // Cek apakah ini hanya update untuk AI insight atau form lengkap
+    $is_specific_update = false;
+    $message = 'Pengaturan berhasil disimpan!'; // Default message
+
     if ($ai_persona_insight !== null) {
-        // Decode Base64 text from frontend to bypass WAF
         $decoded_insight = base64_decode($ai_persona_insight);
-        // Hanya update kolom AI
         $stmt = $pdo->prepare("UPDATE developers SET ai_persona_insight = ? WHERE id = ?");
         $stmt->execute([$decoded_insight, $developer_id]);
-    } elseif ($ai_content_calendar !== null) {
-        // Decode Base64 text from frontend to bypass WAF
+        $message = 'Hasil analisa AI berhasil disimpan!';
+        $is_specific_update = true;
+    }
+    if ($ai_content_calendar !== null) {
         $decoded_calendar = base64_decode($ai_content_calendar);
-        // Hanya update kolom AI Kalender
         $stmt = $pdo->prepare("UPDATE developers SET ai_content_calendar = ? WHERE id = ?");
         $stmt->execute([$decoded_calendar, $developer_id]);
-    } elseif ($ai_creative_caption !== null) {
+        $message = 'Kalender konten berhasil disimpan!';
+        $is_specific_update = true;
+    }
+    if ($ai_creative_caption !== null) {
         $decoded_data = base64_decode($ai_creative_caption);
         $stmt = $pdo->prepare("UPDATE developers SET ai_creative_caption = ? WHERE id = ?");
         $stmt->execute([$decoded_data, $developer_id]);
-    } elseif ($ai_creative_visual !== null) {
+        $message = 'Hasil Caption & Hashtag berhasil disimpan!';
+        $is_specific_update = true;
+    }
+    if ($ai_creative_visual !== null) {
         $decoded_data = base64_decode($ai_creative_visual);
         $stmt = $pdo->prepare("UPDATE developers SET ai_creative_visual = ? WHERE id = ?");
         $stmt->execute([$decoded_data, $developer_id]);
-    } elseif ($ai_creative_video !== null) {
+        $message = 'Hasil Visual Idea berhasil disimpan!';
+        $is_specific_update = true;
+    }
+    if ($ai_creative_video !== null) {
         $decoded_data = base64_decode($ai_creative_video);
         $stmt = $pdo->prepare("UPDATE developers SET ai_creative_video = ? WHERE id = ?");
         $stmt->execute([$decoded_data, $developer_id]);
-    } else {
-        // Update form lengkap
-        $stmt = $pdo->prepare(
-            "UPDATE developers SET 
-                app_name = ?, 
-                notification_email = ?, 
-                logo_url = ?, 
-                maintenance_mode = ? 
-            WHERE id = ?"
-        );
-        $stmt->execute([$app_name, $notification_email, $logo_url, $maintenance_mode, $developer_id]);
+        $message = 'Hasil Video Script berhasil disimpan!';
+        $is_specific_update = true;
     }
 
-    $message = 'Pengaturan berhasil disimpan!';
-    if ($ai_persona_insight !== null) {
-        $message = 'Hasil analisa AI berhasil disimpan!';
-    } elseif ($ai_content_calendar !== null) {
-        $message = 'Kalender konten berhasil disimpan!';
-    } elseif ($ai_creative_caption !== null) {
-        $message = 'Hasil Caption & Hashtag berhasil disimpan!';
-    } elseif ($ai_creative_visual !== null) {
-        $message = 'Hasil Visual Idea berhasil disimpan!';
-    } elseif ($ai_creative_video !== null) {
-        $message = 'Hasil Video Script berhasil disimpan!';
+    // If no specific AI field was sent, and it's a full form submission
+    if (!$is_specific_update && $app_name !== null) {
+        $stmt = $pdo->prepare("UPDATE developers SET app_name = ?, notification_email = ?, logo_url = ?, maintenance_mode = ? WHERE id = ?");
+        $stmt->execute([$app_name, $notification_email, $logo_url, $maintenance_mode, $developer_id]);
     }
 
     echo json_encode(['message' => $message, 'new_logo_url' => $logo_url]);
