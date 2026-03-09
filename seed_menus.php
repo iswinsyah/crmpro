@@ -76,6 +76,10 @@ try {
             'menu_id' => 'ai-objection', 'label' => 'Objection Gen', 'icon' => 'shield-alert',
             'allowed_roles' => json_encode(['All']), 'sort_order' => 42
         ],
+        [
+            'menu_id' => 'ai-content-calendar', 'label' => 'AI Content Calendar', 'icon' => 'calendar-days',
+            'allowed_roles' => json_encode(['Developer', 'Admin CS', 'Super Admin']), 'sort_order' => 43
+        ],
         
         // Kategori 5: Strategy & Setup (sort_order 5x)
         [
