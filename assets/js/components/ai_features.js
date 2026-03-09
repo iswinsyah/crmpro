@@ -42,9 +42,16 @@ export class LeadAnalyzerComponent {
             // Panggil API Gemini via Backend
             const response = await ApiService.generateAIContent(prompt);
             
+            let aiText = `{"score":"Error","label":"AI Gagal","advice":"AI tidak memberikan respon valid. Cek API Key di server."}`;
+            if (response && response.result) {
+                aiText = response.result;
+            } else if (response && response.error) {
+                aiText = `{"score":"Error","label":"AI Error","advice":"${JSON.stringify(response.error)}"}`;
+            }
+
             // Parsing hasil (Gemini kadang mengembalikan markdown json, kita bersihkan)
-            let cleanJson = response.result.replace(/```json|```/g, '').trim();
-            let data = { score: "N/A", label: "UNKNOWN", advice: response.result };
+            let cleanJson = aiText.replace(/```json|```/g, '').trim();
+            let data = { score: "N/A", label: "UNKNOWN", advice: aiText };
             try { data = JSON.parse(cleanJson); } catch(e) { console.log("Raw AI response:", response.result); }
 
             res.innerHTML = `
@@ -53,7 +60,7 @@ export class LeadAnalyzerComponent {
                     <p class="text-[9px] md:text-[10px] font-black text-orange-600 uppercase tracking-widest mt-2">${data.label || 'ANALYSIS DONE'}</p>
                 </div>
                 <div class="bg-slate-900 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-white italic text-[10px] md:text-xs leading-relaxed flex items-center shadow-xl">
-                    "${data.advice || response.result}"
+                    "${data.advice || aiText}"
                 </div>
             `;
             res.classList.remove('hidden');
@@ -138,7 +145,13 @@ export class CreativeSuiteComponent {
 
             const response = await ApiService.generateAIContent(prompt);
             
-            res.innerHTML = `<div class="w-full h-full bg-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl text-[10px] md:text-xs text-slate-200 leading-relaxed font-mono whitespace-pre-wrap border border-white/5 text-left custom-scrollbar overflow-y-auto">${response.result}</div>`;
+            let aiText = "Error: AI tidak memberikan respon yang valid.";
+            if (response && response.result) {
+                aiText = response.result;
+            } else if (response && response.error) {
+                aiText = `Error dari AI: ${JSON.stringify(response.error)}`;
+            }
+            res.innerHTML = `<div class="w-full h-full bg-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl text-[10px] md:text-xs text-slate-200 leading-relaxed font-mono whitespace-pre-wrap border border-white/5 text-left custom-scrollbar overflow-y-auto">${aiText}</div>`;
             res.classList.remove('opacity-30');
         } catch (error) {
             res.innerHTML = `<div class="text-red-400 text-xs">Error: ${error.message}</div>`;
@@ -195,7 +208,14 @@ export class ObjectionGenComponent {
         try {
             const prompt = `Berikan script jawaban sales properti syariah yang taktis, sopan, dan persuasif untuk menangani keberatan prospek: "${objectionMap[type]}". Jawaban harus singkat (max 2 kalimat) dan menekankan value syariah/investasi.`;
             const response = await ApiService.generateAIContent(prompt);
-            container.innerText = response.result;
+            
+            let aiText = "Error: AI tidak memberikan respon yang valid.";
+            if (response && response.result) {
+                aiText = response.result;
+            } else if (response && response.error) {
+                aiText = `Error dari AI: ${JSON.stringify(response.error)}`;
+            }
+            container.innerText = aiText;
         } catch (error) {
             container.innerText = "Gagal memuat AI.";
         }
@@ -292,12 +312,15 @@ export class PersonaInsightComponent {
 
             const response = await ApiService.generateAIContent(prompt);
             
-            // Defensive check: Pastikan AI memberikan respon yang bisa dibaca (string).
-            // Kadang AI mengembalikan object {result: "teks"}, kadang hanya "teks" saja.
-            const aiText = response.result || (typeof response === 'string' ? response : '');
+            let aiText = "Error: AI tidak memberikan respon yang valid.";
+            if (response && response.result) {
+                aiText = response.result;
+            } else if (response && response.error) {
+                aiText = `Error dari AI: ${JSON.stringify(response.error)}. Pastikan API Key di file api/config.php sudah benar.`;
+            }
 
             // Format simple markdown to HTML breaks
-            const formattedResult = aiText.replace(/\n/g, '<br>');
+            const formattedResult = String(aiText).replace(/\n/g, '<br>');
             
             contentContainer.innerHTML = formattedResult;
             resultContainer.classList.remove('hidden');
