@@ -327,7 +327,7 @@ if (!loggedInUser) {
             objectionGenComponent.render();
         } else if (tabId === 'persona') {
             mainContent.innerHTML = `<section id="tab-persona" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
-            personaInsightComponent = new PersonaInsightComponent('tab-persona');
+            personaInsightComponent = new PersonaInsightComponent('tab-persona', state);
             personaInsightComponent.render();
         } else if (tabId === 'ai-engine') {
             mainContent.innerHTML = `<section id="tab-ai-engine" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;

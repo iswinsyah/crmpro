@@ -204,24 +204,107 @@ export class ObjectionGenComponent {
 
 // 4. PERSONA INSIGHT
 export class PersonaInsightComponent {
-    constructor(containerId) { this.container = document.getElementById(containerId); }
+    constructor(containerId, state) { 
+        this.container = document.getElementById(containerId);
+        this.state = state;
+    }
+
     render() {
         if(!this.container) return;
+
+        // Hitung Statistik Real-time dari Data Leads
+        const leads = this.state.leads || [];
+        const totalLeads = leads.length;
+
+        if (totalLeads === 0) {
+            this.container.innerHTML = `<div class="p-10 text-center text-slate-400">Belum ada data lead untuk dianalisis. Silakan input data lead terlebih dahulu.</div>`;
+            return;
+        }
+
+        // Fungsi helper untuk mencari nilai terbanyak (modus)
+        const getTop = (field) => {
+            const counts = {};
+            leads.forEach(l => {
+                const val = l[field] || 'Unknown';
+                counts[val] = (counts[val] || 0) + 1;
+            });
+            return Object.entries(counts).sort((a,b) => b[1] - a[1])[0]?.[0] || '-';
+        };
+
+        const topJob = getTop('job');
+        const topSegment = getTop('segment');
+        const topChannel = getTop('channel'); // Mengganti Domisili dengan Channel karena data domisili tidak ada di tabel
+
         this.container.innerHTML = `
             <div class="max-w-6xl mx-auto space-y-6">
                 <div class="bg-teal-900 rounded-[2rem] p-8 md:p-10 text-white shadow-xl relative overflow-hidden text-center md:text-left">
                     <div class="absolute top-0 right-0 p-8 opacity-10 hidden md:block"><i data-lucide="user-check" class="w-24 h-24"></i></div>
                     <h3 class="text-xl md:text-2xl font-black mb-2 italic leading-tight uppercase tracking-tighter">Global AI Buyer Persona</h3>
                     <p class="text-[10px] md:text-xs opacity-70 font-medium italic max-w-lg mx-auto md:mx-0">"Data dianalisis otomatis dari database lead untuk membedah psikologi, minat, dan merekomendasikan gaya komunikasi terbaik."</p>
+                    <button id="btn-analyze-persona" class="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase shadow-lg transition-all active:scale-95">
+                        <i data-lucide="sparkles" class="w-3 h-3 inline mr-1"></i> Generate AI Analysis
+                    </button>
                 </div>
+                
+                <!-- Stats Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-                    <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 text-center"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Top Pekerjaan</p><p class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter px-2">PNS</p></div>
-                    <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 text-center"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Segmen Dominan</p><p class="text-xl md:text-2xl font-black text-teal-600 tracking-tighter px-2">Karyawan Mapan</p></div>
-                    <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 text-center"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Top Domisili</p><p class="text-xl md:text-2xl font-black text-orange-500 tracking-tighter px-2">Jakarta Selatan</p></div>
+                    <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 text-center"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Top Pekerjaan</p><p class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter px-2 truncate">${topJob}</p></div>
+                    <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 text-center"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Segmen Dominan</p><p class="text-xl md:text-2xl font-black text-teal-600 tracking-tighter px-2 truncate">${topSegment}</p></div>
+                    <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 text-center"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Top Channel</p><p class="text-xl md:text-2xl font-black text-orange-500 tracking-tighter px-2 truncate">${topChannel}</p></div>
+                </div>
+
+                <!-- AI Result Container -->
+                <div id="persona-result" class="hidden bg-white p-6 md:p-10 rounded-[2rem] shadow-lg border border-teal-100 animate-in">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 mr-4">
+                            <i data-lucide="bot" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-black text-slate-800 text-lg uppercase tracking-widest">AI Insight Result</h4>
+                            <p class="text-[10px] text-slate-400 font-bold">Powered by Gemini Pro</p>
+                        </div>
+                    </div>
+                    <div id="persona-content" class="text-xs md:text-sm text-slate-600 leading-relaxed font-medium space-y-2"></div>
                 </div>
             </div>
         `;
+        
+        this.container.querySelector('#btn-analyze-persona').addEventListener('click', () => this.analyzePersona(topJob, topSegment, topChannel));
         if(window.lucide) window.lucide.createIcons();
+    }
+
+    async analyzePersona(job, segment, channel) {
+        const btn = this.container.querySelector('#btn-analyze-persona');
+        const resultContainer = this.container.querySelector('#persona-result');
+        const contentContainer = this.container.querySelector('#persona-content');
+        
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 inline mr-1 animate-spin"></i> Menganalisa...`;
+        btn.disabled = true;
+        
+        try {
+            const prompt = `Sebagai konsultan properti ahli, analisa Buyer Persona berdasarkan data dominan berikut: Pekerjaan=${job}, Segmen=${segment}, Media Masuk=${channel}. 
+            Berikan insight mendalam mengenai:
+            1. Psikologi & Pemicu Pembelian (Pain & Gain).
+            2. Gaya Komunikasi yang disukai.
+            3. Rekomendasi Strategi Closing.
+            Gunakan bahasa Indonesia yang profesional namun mudah dipahami sales. Format dengan poin-poin.`;
+
+            const response = await ApiService.generateAIContent(prompt);
+            
+            // Format simple markdown to HTML breaks
+            const formattedResult = response.result.replace(/\n/g, '<br>');
+            
+            contentContainer.innerHTML = formattedResult;
+            resultContainer.classList.remove('hidden');
+            
+        } catch (error) {
+            alert("Gagal menganalisa persona: " + error.message);
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            if(window.lucide) window.lucide.createIcons();
+        }
     }
 }
 
