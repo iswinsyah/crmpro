@@ -207,6 +207,7 @@ export class PersonaInsightComponent {
     constructor(containerId, state) { 
         this.container = document.getElementById(containerId);
         this.state = state;
+        this.lastAIResult = null; // Untuk menyimpan hasil AI sementara
     }
 
     render() {
@@ -214,6 +215,7 @@ export class PersonaInsightComponent {
 
         // Hitung Statistik Real-time dari Data Leads
         const leads = this.state.leads || [];
+        const savedInsight = this.state.developerSettings?.ai_persona_insight;
         const totalLeads = leads.length;
 
         if (totalLeads === 0) {
@@ -265,11 +267,20 @@ export class PersonaInsightComponent {
                         </div>
                     </div>
                     <div id="persona-content" class="text-xs md:text-sm text-slate-600 leading-relaxed font-medium space-y-2"></div>
+                    <button id="btn-save-persona" class="hidden mt-6 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-black text-[9px] uppercase shadow-lg transition-all active:scale-95">
+                        <i data-lucide="save" class="w-3 h-3 inline mr-1.5"></i> Simpan Hasil Analisa Ini
+                    </button>
                 </div>
             </div>
         `;
         
         this.container.querySelector('#btn-analyze-persona').addEventListener('click', () => this.analyzePersona(topJob, topSegment, topChannel));
+        
+        // Jika ada data tersimpan, langsung tampilkan
+        if (savedInsight) {
+            this.displayResult(savedInsight, false);
+        }
+
         if(window.lucide) window.lucide.createIcons();
     }
 
@@ -292,11 +303,7 @@ export class PersonaInsightComponent {
 
             const response = await ApiService.generateAIContent(prompt);
             
-            // Format simple markdown to HTML breaks
-            const formattedResult = String(response.result).replace(/\n/g, '<br>');
-            
-            contentContainer.innerHTML = formattedResult;
-            resultContainer.classList.remove('hidden');
+            this.displayResult(response.result, true);
             
         } catch (error) {
             contentContainer.innerHTML = `<div class="text-red-500 font-bold">Analisa Gagal:</div><div class="text-xs mt-2">${error.message}</div>`;
@@ -305,6 +312,45 @@ export class PersonaInsightComponent {
             btn.innerHTML = originalText;
             btn.disabled = false;
             if(window.lucide) window.lucide.createIcons();
+        }
+    }
+
+    displayResult(rawText, isNewResult) {
+        const resultContainer = this.container.querySelector('#persona-result');
+        const contentContainer = this.container.querySelector('#persona-content');
+        const saveButton = this.container.querySelector('#btn-save-persona');
+
+        this.lastAIResult = rawText; // Simpan hasil mentah
+        const formattedResult = String(rawText).replace(/\n/g, '<br>');
+        contentContainer.innerHTML = formattedResult;
+        resultContainer.classList.remove('hidden');
+
+        if (isNewResult) {
+            saveButton.classList.remove('hidden');
+            saveButton.onclick = () => this.saveResult();
+        } else {
+            saveButton.classList.add('hidden');
+        }
+        if(window.lucide) window.lucide.createIcons();
+    }
+
+    async saveResult() {
+        const saveButton = this.container.querySelector('#btn-save-persona');
+        saveButton.innerText = 'Menyimpan...';
+        saveButton.disabled = true;
+
+        const formData = new FormData();
+        formData.append('developer_id', this.state.currentUser.developer_id);
+        formData.append('ai_persona_insight', this.lastAIResult);
+
+        try {
+            await fetch(`${ApiService.BASE_URL}/save_developer_settings.php`, { method: 'POST', body: formData });
+            alert('Hasil analisa berhasil disimpan!');
+            saveButton.classList.add('hidden');
+        } catch (error) {
+            alert('Gagal menyimpan hasil: ' + error.message);
+            saveButton.innerText = 'Simpan Hasil Analisa Ini';
+            saveButton.disabled = false;
         }
     }
 }

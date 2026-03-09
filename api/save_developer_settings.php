@@ -9,6 +9,7 @@ $developer_id = $_POST['developer_id'] ?? null;
 $app_name = $_POST['app_name'] ?? null;
 $notification_email = $_POST['notification_email'] ?? null;
 $maintenance_mode = isset($_POST['maintenance_mode']) ? 1 : 0;
+$ai_persona_insight = $_POST['ai_persona_insight'] ?? null; // Data baru dari AI
 $logo_file = $_FILES['logo'] ?? null;
 
 if (!$developer_id) {
@@ -56,18 +57,26 @@ if ($logo_file && $logo_file['error'] === UPLOAD_ERR_OK) {
 }
 
 try {
-    $stmt = $pdo->prepare(
-        "UPDATE developers SET 
-            app_name = ?, 
-            notification_email = ?, 
-            logo_url = ?, 
-            maintenance_mode = ? 
-        WHERE id = ?"
-    );
-    
-    $stmt->execute([$app_name, $notification_email, $logo_url, $maintenance_mode, $developer_id]);
+    // Cek apakah ini hanya update untuk AI insight atau form lengkap
+    if ($ai_persona_insight !== null) {
+        // Hanya update kolom AI
+        $stmt = $pdo->prepare("UPDATE developers SET ai_persona_insight = ? WHERE id = ?");
+        $stmt->execute([$ai_persona_insight, $developer_id]);
+    } else {
+        // Update form lengkap
+        $stmt = $pdo->prepare(
+            "UPDATE developers SET 
+                app_name = ?, 
+                notification_email = ?, 
+                logo_url = ?, 
+                maintenance_mode = ? 
+            WHERE id = ?"
+        );
+        $stmt->execute([$app_name, $notification_email, $logo_url, $maintenance_mode, $developer_id]);
+    }
 
-    echo json_encode(['message' => 'Pengaturan berhasil disimpan!', 'new_logo_url' => $logo_url]);
+    $message = $ai_persona_insight !== null ? 'Hasil analisa AI berhasil disimpan!' : 'Pengaturan berhasil disimpan!';
+    echo json_encode(['message' => $message, 'new_logo_url' => $logo_url]);
 
 } catch (PDOException $e) {
     http_response_code(500);
