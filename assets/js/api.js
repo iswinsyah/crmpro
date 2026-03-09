@@ -41,9 +41,16 @@ export class ApiService {
 
     static async getLeads(userId, role) { // Role might be useful for caching/logging, though backend decides
         try {
-            const url = `${API_BASE_URL}/leads.php?action=list&user_id=${encodeURIComponent(userId)}`;
+            // Menggunakan get_leads.php yang sudah dibuat
+            const url = `${API_BASE_URL}/get_leads.php?user_id=${encodeURIComponent(userId)}`;
             const response = await fetch(url);
-            return await this.handleResponse(response);
+            const leads = await this.handleResponse(response);
+            
+            // Menandai lead milik user sendiri agar tombol hapus & edit muncul
+            return leads.map(lead => {
+                if (lead.owner_id == userId) lead.owner = 'Self';
+                return lead;
+            });
         } catch (error) {
             console.error("API Error (getLeads):", error);
             return []; 
@@ -82,6 +89,19 @@ export class ApiService {
             return await this.handleResponse(response);
         } catch (error) {
             console.error("API Error (updateLeadStatus):", error);
+            throw error;
+        }
+    }
+
+    static async deleteLead(leadId, userId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/delete_lead.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lead_id: leadId, user_id: userId })
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
             throw error;
         }
     }

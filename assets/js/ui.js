@@ -1,4 +1,5 @@
 import { maskInfo } from './helpers.js';
+import { ApiService } from './api.js';
 
 export class UI {
     constructor() {
@@ -63,7 +64,10 @@ export class UI {
     }
 
     openDrawer(lead, currentRole) {
-        const isAuthorized = (currentRole === 'Developer' || currentRole === 'Super Admin/Consultant' || lead.owner === 'Self');
+        // Cek otorisasi lebih robust
+        const user = JSON.parse(localStorage.getItem('mgo_user')) || {};
+        const isOwner = lead.owner === 'Self' || lead.owner_id == user.id;
+        const isAuthorized = (currentRole === 'Developer' || currentRole === 'Super Admin' || currentRole.includes('Super Admin') || isOwner);
         
         const drawerHTML = `
         <div id="leadDetailModal" class="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-sm">
@@ -97,6 +101,10 @@ export class UI {
                                 <p class="text-[10px] md:text-[11px] font-medium text-teal-800 leading-relaxed">Anda memiliki akses penuh untuk follow-up data ini.</p>
                             </div>
                             <a href="https://wa.me/${lead.phone.replace(/^0/, '62')}" target="_blank" class="w-full py-4 md:py-5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl md:rounded-2xl font-black text-[10px] uppercase shadow-xl transition-all flex justify-center items-center"><i data-lucide="message-circle" class="w-4 h-4 mr-2"></i> Chat WhatsApp Sekarang</a>
+                            
+                            <button id="btn-delete-lead" data-id="${lead.id}" class="w-full py-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl font-black text-[10px] uppercase transition-all flex justify-center items-center mt-2">
+                                <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i> Hapus Data Lead
+                            </button>
                         </div>
                     ` : `
                         <div class="p-6 md:p-8 bg-slate-900 rounded-[1.5rem] md:rounded-[2.5rem] text-white shadow-2xl space-y-4 border border-white/5 mt-6 md:mt-8">
@@ -115,6 +123,25 @@ export class UI {
         document.getElementById('btn-close-drawer').addEventListener('click', () => {
             this.els.drawerContainer.innerHTML = '';
         });
+
+        const btnDelete = document.getElementById('btn-delete-lead');
+        if (btnDelete) {
+            btnDelete.addEventListener('click', async () => {
+                if (confirm('PERINGATAN: Data lead ini akan dihapus permanen. Lanjutkan?')) {
+                    try {
+                        // Kita butuh user ID, ambil dari localStorage karena UI tidak punya state
+                        const user = JSON.parse(localStorage.getItem('mgo_user'));
+                        await ApiService.deleteLead(lead.id, user.id);
+                        
+                        this.showToast('Lead berhasil dihapus.');
+                        this.els.drawerContainer.innerHTML = ''; // Tutup drawer
+                        document.dispatchEvent(new CustomEvent('lead-deleted')); // Kabari main.js untuk refresh
+                    } catch (error) {
+                        this.showToast('Gagal menghapus: ' + error.message, 'error');
+                    }
+                }
+            });
+        }
 
         if(window.lucide) window.lucide.createIcons();
     }

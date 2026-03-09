@@ -183,6 +183,11 @@ if (!loggedInUser) {
         document.addEventListener('lead-selected', (e) => {
             ui.openDrawer(e.detail, state.currentRole);
         });
+        // Listener baru: Saat lead dihapus, refresh data
+        document.addEventListener('lead-deleted', async () => {
+            await refreshData();
+            switchTab(state.currentTab); // Re-render tab aktif
+        });
     }
 
     function setupUserUI() {
@@ -303,7 +308,7 @@ if (!loggedInUser) {
             clientManagementComponent.render();
         } else if (tabId === 'reminder-followup') {
             mainContent.innerHTML = `<section id="tab-reminder-followup" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
-            reminderFollowupComponent = new ReminderFollowupComponent('tab-reminder-followup');
+            reminderFollowupComponent = new ReminderFollowupComponent('tab-reminder-followup', state);
             reminderFollowupComponent.render();
         } else if (tabId === 'reporting') {
             mainContent.innerHTML = `<section id="tab-reporting" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
