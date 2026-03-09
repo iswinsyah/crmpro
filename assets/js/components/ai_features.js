@@ -71,113 +71,215 @@ export class CreativeSuiteComponent {
     constructor(containerId, state) {
         this.container = document.getElementById(containerId);
         this.state = state;
-        this.mode = 'text';
+        this.activeMode = 'caption';
+        this.lastAIResults = {}; // { caption: "...", visual: "...", video: "..." }
+        this.modes = {
+            caption: {
+                label: 'Caption & Hashtag',
+                icon: 'file-text',
+                db_key: 'ai_creative_caption',
+                prompt_instruction: "Buatlah **Copywriting Lengkap** untuk caption Instagram/Facebook yang sangat persuasif, terdiri dari: \n1. **Headline** yang menarik perhatian. \n2. **Body Copy** yang menjelaskan keuntungan sesuai persona. \n3. **Call to Action (CTA)** yang kuat. \n4. Sertakan juga **10-15 rekomendasi hashtag** yang relevan dengan topik dan target market."
+            },
+            visual: {
+                label: 'Visual Idea',
+                icon: 'image',
+                db_key: 'ai_creative_visual',
+                prompt_instruction: "Berikan **Ide Konsep Visual** untuk postingan Instagram (bisa carousel atau single image). Jelaskan secara detail: \n1. **Gambar Utama/Slide 1:** Deskripsi visual dan teks overlay. \n2. **Gambar/Slide Berikutnya:** Deskripsi visual dan poin-poin penting. \n3. **Teks untuk Caption:** Tulis caption singkat yang sesuai dengan visualnya."
+            },
+            video: {
+                label: 'Video Script',
+                icon: 'video',
+                db_key: 'ai_creative_video',
+                prompt_instruction: "Tulis **Naskah/Script Video Pendek** (TikTok/Reels) yang lengkap, mencakup: \n1. **Hook (3 detik pertama):** Kalimat atau adegan pembuka yang membuat orang berhenti scroll. \n2. **Isi Video:** Poin-poin utama yang disampaikan (bisa berupa narasi atau teks di layar). \n3. **Visual/Adegan:** Deskripsi singkat adegan yang harus direkam. \n4. **Call to Action (CTA):** Ajakan di akhir video."
+            }
+        };
     }
+
     render() {
-        if(!this.container) return;
-        const savedInsight = this.state.developerSettings?.ai_persona_insight;
+        if (!this.container) return;
+
+        const tabButtons = Object.keys(this.modes).map(key => {
+            const mode = this.modes[key];
+            return `<button data-mode="${key}" class="creative-tab-btn shrink-0 snap-center min-w-[140px] flex-1 py-3 px-4 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all flex items-center justify-center">
+                        <i data-lucide="${mode.icon}" class="w-3.5 h-3.5 mr-2"></i> ${mode.label}
+                    </button>`;
+        }).join('');
 
         this.container.innerHTML = `
             <div class="max-w-5xl mx-auto space-y-6">
-                <div class="flex space-x-2 md:space-x-4 bg-white p-2 rounded-2xl shadow-sm border border-slate-200 overflow-x-auto hide-scroll shrink-0 snap-x">
-                    <button id="btn-creative-text" class="shrink-0 snap-center min-w-[140px] flex-1 py-3 px-4 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all flex items-center justify-center bg-teal-600 text-white shadow-lg"><i data-lucide="file-text" class="w-3.5 h-3.5 mr-2"></i> Copywriting AI</button>
-                    <button id="btn-creative-visual" class="shrink-0 snap-center min-w-[140px] flex-1 py-3 px-4 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all flex items-center justify-center text-slate-400 hover:bg-slate-50"><i data-lucide="image" class="w-3.5 h-3.5 mr-2"></i> Visual Idea</button>
-                    <button id="btn-creative-video" class="shrink-0 snap-center min-w-[140px] flex-1 py-3 px-4 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all flex items-center justify-center text-slate-400 hover:bg-slate-50"><i data-lucide="video" class="w-3.5 h-3.5 mr-2"></i> Video Script</button>
+                <div id="creative-tabs-container" class="flex space-x-2 md:space-x-4 bg-white p-2 rounded-2xl shadow-sm border border-slate-200 overflow-x-auto hide-scroll shrink-0 snap-x">
+                    ${tabButtons}
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                    <div class="bg-white p-6 md:p-10 rounded-[2rem] border border-slate-200 shadow-sm">
-                        <h3 class="text-xs md:text-sm font-black text-slate-800 mb-6 uppercase tracking-widest italic text-center md:text-left">AI Content Parameter</h3>
-                        <div class="space-y-4">
-                            <textarea id="topic-from-calendar" placeholder="Paste topik dari Kalender Konten di sini..." class="w-full bg-teal-50 border-2 border-dashed border-teal-200 rounded-2xl p-4 h-24 text-xs font-medium resize-none focus:ring-2 focus:ring-teal-500 outline-none shadow-inner"></textarea>
-                            <select id="creative-angle" class="w-full bg-slate-50 border p-4 rounded-2xl text-[10px] font-bold outline-none"><option>Angle: Syariah Murni Tanpa Sita</option><option>Angle: Rumah Pertama Milenial</option><option>Angle: Investasi Properti Menguntungkan</option></select>
-                            <textarea id="creative-input" placeholder="Detail TAMBAHAN: Poin promo, spesifikasi unit, atau kendala prospek..." class="w-full bg-slate-50 border rounded-2xl p-4 h-32 md:h-40 text-xs font-medium resize-none focus:ring-2 focus:ring-teal-500 outline-none shadow-inner"></textarea>
-                            <button id="btn-generate-creative" class="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl font-black text-[10px] uppercase shadow-xl transition-all active:scale-95">Generate Konten Kreatif</button>
-                        </div>
-                    </div>
-                    <div class="bg-slate-900 p-6 md:p-8 rounded-[2rem] text-white shadow-2xl flex flex-col min-h-[300px] md:min-h-[400px]">
-                        <p class="text-[9px] font-black text-teal-400 uppercase mb-4 tracking-widest flex items-center"><i data-lucide="sparkles" class="w-3.5 h-3.5 mr-2"></i> AI Content Result (Gemini)</p>
-                        <div id="creative-result" class="flex-1 flex flex-col items-center justify-center opacity-30 text-center px-4">
-                            <i data-lucide="bot" class="w-8 h-8 mb-3"></i>
-                            <p class="text-xs italic font-medium">Masukkan parameter dan klik generate.</p>
-                        </div>
-                    </div>
+                <div id="creative-content-area">
+                    <!-- Konten tab akan dirender di sini -->
                 </div>
             </div>
         `;
-        this.setupListeners();
-        if(window.lucide) window.lucide.createIcons();
-    }
-    setupListeners() {
-        ['text', 'visual', 'video'].forEach(m => {
-            this.container.querySelector(`#btn-creative-${m}`).addEventListener('click', () => this.switchMode(m));
+
+        this.container.querySelector('#creative-tabs-container').addEventListener('click', (e) => {
+            const button = e.target.closest('.creative-tab-btn');
+            if (button && button.dataset.mode) {
+                this.switchMode(button.dataset.mode);
+            }
         });
-        this.container.querySelector('#btn-generate-creative').addEventListener('click', () => this.generate());
+
+        this.switchMode(this.activeMode); // Render tab awal
     }
-    switchMode(mode) {
-        this.mode = mode;
-        ['text', 'visual', 'video'].forEach(m => {
-            const btn = this.container.querySelector(`#btn-creative-${m}`);
-            btn.className = (m === mode) 
-                ? "shrink-0 snap-center min-w-[140px] flex-1 py-3 px-4 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all flex items-center justify-center bg-teal-600 text-white shadow-lg"
-                : "shrink-0 snap-center min-w-[140px] flex-1 py-3 px-4 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all flex items-center justify-center text-slate-400 hover:bg-slate-50";
+
+    switchMode(modeKey) {
+        this.activeMode = modeKey;
+
+        // Update style tombol tab
+        this.container.querySelectorAll('.creative-tab-btn').forEach(btn => {
+            if (btn.dataset.mode === modeKey) {
+                btn.classList.add('bg-teal-600', 'text-white', 'shadow-lg');
+                btn.classList.remove('text-slate-400', 'hover:bg-slate-50');
+            } else {
+                btn.classList.remove('bg-teal-600', 'text-white', 'shadow-lg');
+                btn.classList.add('text-slate-400', 'hover:bg-slate-50');
+            }
         });
-        if(window.lucide) window.lucide.createIcons();
+
+        this.renderTabContent();
     }
+
+    renderTabContent() {
+        const contentArea = this.container.querySelector('#creative-content-area');
+        const config = this.modes[this.activeMode];
+        const savedData = this.state.developerSettings?.[config.db_key];
+
+        contentArea.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 animate-in">
+                <div class="bg-white p-6 md:p-10 rounded-[2rem] border border-slate-200 shadow-sm">
+                    <h3 class="text-xs md:text-sm font-black text-slate-800 mb-6 uppercase tracking-widest italic text-center md:text-left">AI Content Parameter</h3>
+                    <div class="space-y-4">
+                        <textarea id="topic-from-calendar" placeholder="Paste topik dari Kalender Konten di sini..." class="w-full bg-teal-50 border-2 border-dashed border-teal-200 rounded-2xl p-4 h-24 text-xs font-medium resize-none focus:ring-2 focus:ring-teal-500 outline-none shadow-inner"></textarea>
+                        <select id="creative-angle" class="w-full bg-slate-50 border p-4 rounded-2xl text-[10px] font-bold outline-none"><option>Angle: Syariah Murni Tanpa Sita</option><option>Angle: Rumah Pertama Milenial</option><option>Angle: Investasi Properti Menguntungkan</option></select>
+                        <textarea id="creative-input" placeholder="Detail TAMBAHAN: Poin promo, spesifikasi unit, dll..." class="w-full bg-slate-50 border rounded-2xl p-4 h-32 md:h-40 text-xs font-medium resize-none focus:ring-2 focus:ring-teal-500 outline-none shadow-inner"></textarea>
+                        <button id="btn-generate-creative" class="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl font-black text-[10px] uppercase shadow-xl transition-all active:scale-95">Generate ${config.label}</button>
+                    </div>
+                </div>
+                <div class="bg-slate-900 p-6 md:p-8 rounded-[2rem] text-white shadow-2xl flex flex-col min-h-[300px] md:min-h-[400px]">
+                    <p class="text-[9px] font-black text-teal-400 uppercase mb-4 tracking-widest flex items-center"><i data-lucide="sparkles" class="w-3.5 h-3.5 mr-2"></i> AI Result: ${config.label}</p>
+                    <div id="creative-result" class="flex-1 flex flex-col items-center justify-center text-center px-4">
+                        <!-- Hasil AI atau data tersimpan -->
+                    </div>
+                    <button id="btn-save-creative" class="hidden mt-6 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-black text-[9px] uppercase shadow-lg transition-all active:scale-95 self-start">
+                        <i data-lucide="save" class="w-3 h-3 inline mr-1.5"></i> Simpan Hasil Ini
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const resultContainer = contentArea.querySelector('#creative-result');
+        if (savedData) {
+            resultContainer.innerHTML = `<div class="w-full h-full bg-white/5 p-4 md:p-6 rounded-2xl text-xs text-slate-200 leading-relaxed font-mono whitespace-pre-wrap border border-white/5 text-left custom-scrollbar overflow-y-auto">${savedData}</div>`;
+        } else {
+            resultContainer.innerHTML = `<div class="opacity-30"><i data-lucide="bot" class="w-8 h-8 mb-3 mx-auto"></i><p class="text-xs italic font-medium">Masukkan parameter dan klik generate.</p></div>`;
+        }
+
+        // Attach listeners for the new elements
+        contentArea.querySelector('#btn-generate-creative').addEventListener('click', () => this.generate());
+        contentArea.querySelector('#btn-save-creative').addEventListener('click', () => this.saveResult());
+
+        if (window.lucide) window.lucide.createIcons();
+    }
+
     async generate() {
-        const btn = this.container.querySelector('#btn-generate-creative');
-        const res = this.container.querySelector('#creative-result');
-        const topic = this.container.querySelector('#topic-from-calendar').value;
-        const angle = this.container.querySelector('#creative-angle').value;
-        const input = this.container.querySelector('#creative-input').value;
-        
+        const contentArea = this.container.querySelector('#creative-content-area');
+        const btn = contentArea.querySelector('#btn-generate-creative');
+        const resContainer = contentArea.querySelector('#creative-result');
+        const saveBtn = contentArea.querySelector('#btn-save-creative');
+
+        const topic = contentArea.querySelector('#topic-from-calendar').value;
+        const angle = contentArea.querySelector('#creative-angle').value;
+        const input = contentArea.querySelector('#creative-input').value;
+
         if (!topic) {
             alert('Silakan paste topik dari Kalender Konten terlebih dahulu.');
             return;
         }
 
-        const originalText = btn.innerText;
-        btn.innerText = "Processing AI...";
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Processing...`;
         btn.disabled = true;
-        res.innerHTML = `<div class="animate-pulse flex flex-col items-center"><i data-lucide="cpu" class="w-8 h-8 text-teal-400 mb-3"></i><p class="text-[10px] font-black uppercase tracking-widest">Merangkai...</p></div>`;
-        res.classList.remove('opacity-30');
-        if(window.lucide) window.lucide.createIcons();
-        
+        saveBtn.classList.add('hidden');
+        resContainer.innerHTML = `<div class="animate-pulse flex flex-col items-center"><i data-lucide="cpu" class="w-8 h-8 text-teal-400 mb-3"></i><p class="text-[10px] font-black uppercase tracking-widest">Merangkai...</p></div>`;
+        if (window.lucide) window.lucide.createIcons();
+
         try {
             const personaInsight = this.state.developerSettings?.ai_persona_insight || 'Tidak ada data persona. Asumsikan target market umum untuk properti syariah.';
+            const config = this.modes[this.activeMode];
 
-            let prompt = `Anda adalah seorang Creative Director ahli untuk agensi properti syariah.
-            
-**KONTEKS BUYER PERSONA (berdasarkan data):**
+            const prompt = `Anda adalah seorang Creative Director ahli untuk agensi properti syariah.
+**KONTEKS BUYER PERSONA:**
 ---
 ${personaInsight}
 ---
-
 **TUGAS ANDA:**
 Buat konten kreatif untuk properti syariah dengan detail sebagai berikut:
 - **Topik Utama:** "${topic}"
-- **Mode Konten:** ${this.mode}
 - **Angle/Sudut Pandang:** ${angle}
 - **Detail Tambahan dari User:** ${input || 'Tidak ada.'}
-
-**INSTRUKSI OUTPUT:**
-`;
-
-            if (this.mode === 'text') {
-                prompt += "Buatlah **Copywriting Lengkap** yang sangat persuasif, terdiri dari: \n1. **Headline** yang menarik perhatian. \n2. **Body Copy** yang menjelaskan keuntungan sesuai persona. \n3. **Call to Action (CTA)** yang kuat.";
-            } else if (this.mode === 'visual') {
-                prompt += "Berikan **Ide Konsep Visual** untuk postingan Instagram (bisa carousel atau single image). Jelaskan secara detail: \n1. **Gambar Utama/Slide 1:** Deskripsi visual dan teks overlay. \n2. **Gambar/Slide Berikutnya:** Deskripsi visual dan poin-poin penting. \n3. **Teks untuk Caption:** Tulis caption singkat yang sesuai dengan visualnya.";
-            } else { // video
-                prompt += "Tulis **Naskah/Script Video Pendek** (TikTok/Reels) yang lengkap, mencakup: \n1. **Hook (3 detik pertama):** Kalimat atau adegan pembuka yang membuat orang berhenti scroll. \n2. **Isi Video:** Poin-poin utama yang disampaikan (bisa berupa narasi atau teks di layar). \n3. **Visual/Adegan:** Deskripsi singkat adegan yang harus direkam. \n4. **Call to Action (CTA):** Ajakan di akhir video.";
-            }
+**INSTRUKSI OUTPUT SPESIFIK:**
+${config.prompt_instruction}`;
 
             const response = await ApiService.generateAIContent(prompt);
+            this.lastAIResults[this.activeMode] = response.result;
 
-            res.innerHTML = `<div class="w-full h-full bg-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl text-[10px] md:text-xs text-slate-200 leading-relaxed font-mono whitespace-pre-wrap border border-white/5 text-left custom-scrollbar overflow-y-auto">${response.result}</div>`;
+            resContainer.innerHTML = `<div class="w-full h-full bg-white/5 p-4 md:p-6 rounded-2xl text-xs text-slate-200 leading-relaxed font-mono whitespace-pre-wrap border border-white/5 text-left custom-scrollbar overflow-y-auto">${response.result}</div>`;
+            saveBtn.classList.remove('hidden');
+
         } catch (error) {
-            res.innerHTML = `<div class="text-red-400 text-xs">Error: ${error.message}</div>`;
+            resContainer.innerHTML = `<div class="text-red-400 text-xs">Error: ${error.message}</div>`;
         } finally {
-            btn.innerText = originalText;
+            btn.innerHTML = originalText;
             btn.disabled = false;
+            if (window.lucide) window.lucide.createIcons();
+        }
+    }
+
+    async saveResult() {
+        const contentArea = this.container.querySelector('#creative-content-area');
+        const saveBtn = contentArea.querySelector('#btn-save-creative');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = 'Menyimpan...';
+        saveBtn.disabled = true;
+
+        const config = this.modes[this.activeMode];
+        const resultToSave = this.lastAIResults[this.activeMode];
+
+        if (!resultToSave) {
+            alert('Tidak ada hasil untuk disimpan.');
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('developer_id', this.state.currentUser.developer_id);
+        formData.append('user_id', this.state.currentUser.id);
+        
+        const encodedResult = btoa(unescape(encodeURIComponent(resultToSave)));
+        formData.append(config.db_key, encodedResult);
+
+        try {
+            const response = await fetch('api/save_developer_settings.php', { method: 'POST', body: formData });
+            if (!response.ok) throw new Error(`Server Error: ${response.status}`);
+            const result = await response.json();
+            
+            alert(result.message || 'Hasil berhasil disimpan!');
+            saveBtn.classList.add('hidden');
+
+            // Update state global
+            if (!this.state.developerSettings) this.state.developerSettings = {};
+            this.state.developerSettings[config.db_key] = resultToSave;
+
+        } catch (error) {
+            alert('Gagal menyimpan: ' + error.message);
+            saveBtn.innerHTML = originalText;
+        } finally {
+            saveBtn.disabled = false;
         }
     }
 }

@@ -11,6 +11,9 @@ $notification_email = $_POST['notification_email'] ?? null;
 $maintenance_mode = isset($_POST['maintenance_mode']) ? 1 : 0;
 $ai_persona_insight = $_POST['ai_persona_insight'] ?? null; // Data baru dari AI
 $ai_content_calendar = $_POST['ai_content_calendar'] ?? null; // Data baru dari AI Kalender
+$ai_creative_caption = $_POST['ai_creative_caption'] ?? null;
+$ai_creative_visual = $_POST['ai_creative_visual'] ?? null;
+$ai_creative_video = $_POST['ai_creative_video'] ?? null;
 $logo_file = $_FILES['logo'] ?? null;
 
 if (!$developer_id) {
@@ -71,6 +74,18 @@ try {
         // Hanya update kolom AI Kalender
         $stmt = $pdo->prepare("UPDATE developers SET ai_content_calendar = ? WHERE id = ?");
         $stmt->execute([$decoded_calendar, $developer_id]);
+    } elseif ($ai_creative_caption !== null) {
+        $decoded_data = base64_decode($ai_creative_caption);
+        $stmt = $pdo->prepare("UPDATE developers SET ai_creative_caption = ? WHERE id = ?");
+        $stmt->execute([$decoded_data, $developer_id]);
+    } elseif ($ai_creative_visual !== null) {
+        $decoded_data = base64_decode($ai_creative_visual);
+        $stmt = $pdo->prepare("UPDATE developers SET ai_creative_visual = ? WHERE id = ?");
+        $stmt->execute([$decoded_data, $developer_id]);
+    } elseif ($ai_creative_video !== null) {
+        $decoded_data = base64_decode($ai_creative_video);
+        $stmt = $pdo->prepare("UPDATE developers SET ai_creative_video = ? WHERE id = ?");
+        $stmt->execute([$decoded_data, $developer_id]);
     } else {
         // Update form lengkap
         $stmt = $pdo->prepare(
@@ -89,6 +104,12 @@ try {
         $message = 'Hasil analisa AI berhasil disimpan!';
     } elseif ($ai_content_calendar !== null) {
         $message = 'Kalender konten berhasil disimpan!';
+    } elseif ($ai_creative_caption !== null) {
+        $message = 'Hasil Caption & Hashtag berhasil disimpan!';
+    } elseif ($ai_creative_visual !== null) {
+        $message = 'Hasil Visual Idea berhasil disimpan!';
+    } elseif ($ai_creative_video !== null) {
+        $message = 'Hasil Video Script berhasil disimpan!';
     }
 
     echo json_encode(['message' => $message, 'new_logo_url' => $logo_url]);
