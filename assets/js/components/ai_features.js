@@ -384,13 +384,16 @@ export class PersonaInsightComponent {
         formData.append('ai_persona_insight', encodedInsight);
 
         try {
-            const response = await fetch(`${ApiService.BASE_URL}/save_developer_settings.php`, { method: 'POST', body: formData });
-            const result = await ApiService.handleResponse(response); // Handle error response dengan benar
+            // Gunakan path relative 'api/' yang lebih aman
+            const response = await fetch('api/save_developer_settings.php', { method: 'POST', body: formData });
+            
+            if (!response.ok) throw new Error(`Server Error: ${response.status}`);
+            const result = await response.json();
             
             alert('Hasil analisa berhasil disimpan!');
             saveButton.classList.add('hidden');
             
-            // Update state lokal agar jika pindah tab, data tetap ada
+            // Update state global agar Content Calendar langsung bisa baca
             if (!this.state.developerSettings) this.state.developerSettings = {};
             this.state.developerSettings.ai_persona_insight = this.lastAIResult;
 
@@ -657,7 +660,9 @@ Pastikan jumlah object sesuai dengan (Durasi x Frekuensi). Jangan tambahkan teks
         formData.append('ai_content_calendar', encodedCalendar);
 
         try {
-            await fetch(`${ApiService.BASE_URL}/save_developer_settings.php`, { method: 'POST', body: formData });
+            // Gunakan path relative 'api/' yang lebih aman
+            const response = await fetch('api/save_developer_settings.php', { method: 'POST', body: formData });
+            if (!response.ok) throw new Error(`Server Error: ${response.status}`);
             alert('Kalender konten berhasil disimpan!');
             saveButton.classList.add('hidden');
             if (!this.state.developerSettings) this.state.developerSettings = {};

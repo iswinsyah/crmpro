@@ -71,12 +71,6 @@ try {
         // Hanya update kolom AI Kalender
         $stmt = $pdo->prepare("UPDATE developers SET ai_content_calendar = ? WHERE id = ?");
         $stmt->execute([$decoded_calendar, $developer_id]);
-    } elseif ($ai_content_calendar !== null) {
-        // Decode Base64 text from frontend to bypass WAF
-        $decoded_calendar = base64_decode($ai_content_calendar);
-        // Hanya update kolom AI Kalender
-        $stmt = $pdo->prepare("UPDATE developers SET ai_content_calendar = ? WHERE id = ?");
-        $stmt->execute([$decoded_calendar, $developer_id]);
     } else {
         // Update form lengkap
         $stmt = $pdo->prepare(
