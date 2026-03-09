@@ -1,5 +1,6 @@
 <?php
-// api/config.php
-// Simpan API Key di sini. File ini aman dan tidak terlihat di browser.
-define('GEMINI_API_KEY', 'PASTE_API_KEY_DISINI');
-?>
+// File: api/config.php
+// PENTING: JANGAN PERNAH BAGIKAN FILE INI ATAU UPLOAD KE REPOSITORY PUBLIK.
+
+// Masukkan API Key Google Gemini Anda di sini
+define('GEMINI_API_KEY', 'AIzaSyDugDhtGeetcV7eYC-V_E1cH5WAgEzechs');
