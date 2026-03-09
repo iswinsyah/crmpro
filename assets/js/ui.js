@@ -64,16 +64,25 @@ export class UI {
     }
 
     openDrawer(lead, currentRole) {
-        // Cek otorisasi lebih robust
+        // JURUS PAMUNGKAS: Debugging & Robust Check
         const user = JSON.parse(localStorage.getItem('mgo_user')) || {};
-        const isOwner = lead.owner === 'Self' || lead.owner_id == user.id;
-        const isAuthorized = (currentRole === 'Developer' || currentRole === 'Super Admin' || currentRole.includes('Super Admin') || isOwner);
+        
+        // Pastikan ID dibandingkan secara loose (string vs number) menggunakan ==
+        const isOwner = (lead.owner_id == user.id);
+        
+        // Developer & Super Admin selalu punya akses penuh
+        const isAdmin = (currentRole === 'Developer' || currentRole === 'Super Admin');
+        
+        const canManage = (isAdmin || isOwner);
+
+        console.log(`[Drawer Debug] LeadID: ${lead.id}, OwnerID: ${lead.owner_id}, UserID: ${user.id}, CanManage: ${canManage}`);
         
         const drawerHTML = `
         <div id="leadDetailModal" class="fixed inset-0 z-[100] flex justify-end bg-black/40 backdrop-blur-sm">
             <div class="w-[85%] sm:w-[480px] bg-white h-full shadow-2xl overflow-y-auto p-6 md:p-10 border-l relative flex flex-col animate-in slide-in-from-right-8">
                 <div class="flex justify-between items-center mb-6 md:mb-8 shrink-0">
                     <button id="btn-close-drawer" class="p-2 hover:bg-slate-100 rounded-full bg-slate-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    ${canManage ? '<span class="px-2 py-1 bg-blue-100 text-blue-700 text-[9px] font-bold rounded uppercase">Admin/Owner Access</span>' : ''}
                 </div>
                 <div class="space-y-6 md:space-y-8 flex-1">
                     <div>
@@ -94,19 +103,19 @@ export class UI {
                             </div>
                         </div>
                     </div>
-                    ${isAuthorized ? `
-                        <div class="space-y-3 md:space-y-4 mt-6 md:mt-8">
+                    ${canManage ? `
+                        <div class="space-y-3 md:space-y-4 mt-6 md:mt-8 border-t pt-6">
                             <div class="p-4 md:p-6 bg-teal-50 rounded-[1.5rem] md:rounded-[2.5rem] border border-teal-100 italic">
                                 <p class="text-[9px] md:text-[10px] font-black text-teal-600 uppercase mb-1 flex items-center"><i data-lucide="shield-check" class="w-3.5 h-3.5 mr-2"></i> Data Verified</p>
-                                <p class="text-[10px] md:text-[11px] font-medium text-teal-800 leading-relaxed">Anda memiliki akses penuh untuk follow-up data ini.</p>
+                                <p class="text-[10px] md:text-[11px] font-medium text-teal-800 leading-relaxed">Anda memiliki akses penuh untuk mengelola data ini.</p>
                             </div>
                             ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/^0/, '62')}" target="_blank" class="w-full py-4 md:py-5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl md:rounded-2xl font-black text-[10px] uppercase shadow-xl transition-all flex justify-center items-center"><i data-lucide="message-circle" class="w-4 h-4 mr-2"></i> Chat WhatsApp Sekarang</a>` : `<div class="w-full py-4 md:py-5 bg-slate-100 text-slate-400 rounded-xl md:rounded-2xl font-black text-[10px] uppercase flex justify-center items-center cursor-not-allowed"><i data-lucide="message-circle-off" class="w-4 h-4 mr-2"></i> No WhatsApp Available</div>`}
                             
-                            <div class="flex gap-3 mt-3">
-                                <button id="btn-edit-lead" class="flex-1 py-3 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl font-black text-[10px] uppercase transition-all flex justify-center items-center">
-                                    <i data-lucide="edit" class="w-4 h-4 mr-2"></i> Edit
+                            <div class="grid grid-cols-2 gap-3 mt-4">
+                                <button id="btn-edit-lead" class="py-3 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl font-black text-[10px] uppercase transition-all flex justify-center items-center border border-blue-100">
+                                    <i data-lucide="edit" class="w-4 h-4 mr-2"></i> Edit Data
                                 </button>
-                                <button id="btn-delete-lead" data-id="${lead.id}" class="flex-1 py-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl font-black text-[10px] uppercase transition-all flex justify-center items-center">
+                                <button id="btn-delete-lead" data-id="${lead.id}" class="py-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl font-black text-[10px] uppercase transition-all flex justify-center items-center border border-red-100">
                                     <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i> Hapus
                                 </button>
                             </div>
