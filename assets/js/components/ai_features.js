@@ -377,7 +377,7 @@ export class PersonaInsightComponent {
                 <div class="bg-teal-900 rounded-[2rem] p-8 md:p-10 text-white shadow-xl relative overflow-hidden text-center md:text-left">
                     <div class="absolute top-0 right-0 p-8 opacity-10 hidden md:block"><i data-lucide="user-check" class="w-24 h-24"></i></div>
                     <h3 class="text-xl md:text-2xl font-black mb-2 italic leading-tight uppercase tracking-tighter">Global AI Buyer Persona</h3>
-                    <p class="text-[10px] md:text-xs opacity-70 font-medium italic max-w-lg mx-auto md:mx-0">"Data dianalisis otomatis dari database lead untuk membedah psikologi, minat, dan merekomendasikan gaya komunikasi terbaik."</p>
+                    <p class="text-[10px] md:text-xs opacity-70 font-medium italic max-w-lg mx-auto md:mx-0">"Data dari <strong class="text-orange-400">${totalLeads} Lead</strong> (Akumulasi Tim) dianalisis otomatis untuk membedah psikologi & minat pasar Anda."</p>
                     <button id="btn-analyze-persona" class="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase shadow-lg transition-all active:scale-95">
                         <i data-lucide="sparkles" class="w-3 h-3 inline mr-1"></i> Generate AI Analysis
                     </button>
