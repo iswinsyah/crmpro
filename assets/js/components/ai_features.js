@@ -383,29 +383,42 @@ export class PersonaInsightComponent {
                     </button>
                 </div>
                 
-                <!-- Stats Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 text-center"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Top Pekerjaan</p><p class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter px-2 truncate">${topJob}</p></div>
                     <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 text-center"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Segmen Dominan</p><p class="text-xl md:text-2xl font-black text-teal-600 tracking-tighter px-2 truncate">${topSegment}</p></div>
                     <div class="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-200 text-center"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Top Channel</p><p class="text-xl md:text-2xl font-black text-orange-500 tracking-tighter px-2 truncate">${topChannel}</p></div>
                 </div>
 
-                <!-- AI Result Container -->
-                <div id="persona-result" class="hidden bg-white p-6 md:p-10 rounded-[2rem] shadow-lg border border-teal-100 animate-in">
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 mr-4">
-                            <i data-lucide="bot" class="w-6 h-6"></i>
+                <!-- AI Result Grid -->
+                <div id="persona-result-grid" class="hidden grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 animate-in">
+                    <!-- Persona Insight Result -->
+                    <div id="persona-result-card" class="lg:col-span-3 bg-white p-6 md:p-10 rounded-[2rem] shadow-lg border border-teal-100">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 mr-4">
+                                <i data-lucide="bot" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-slate-800 text-lg uppercase tracking-widest">AI Persona Insight</h4>
+                                <p class="text-[10px] text-slate-400 font-bold">Powered by Gemini Pro</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-black text-slate-800 text-lg uppercase tracking-widest">AI Insight Result</h4>
-                            <p class="text-[10px] text-slate-400 font-bold">Powered by Gemini Pro</p>
-                        </div>
+                        <div id="persona-content" class="text-xs md:text-sm text-slate-600 leading-relaxed font-medium space-y-2"></div>
                     </div>
-                    <div id="persona-content" class="text-xs md:text-sm text-slate-600 leading-relaxed font-medium space-y-2"></div>
-                    <button id="btn-save-persona" class="hidden mt-6 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-black text-[9px] uppercase shadow-lg transition-all active:scale-95">
-                        <i data-lucide="save" class="w-3 h-3 inline mr-1.5"></i> Simpan Hasil Analisa Ini
-                    </button>
+                    <!-- Channel Recommendation Result -->
+                    <div id="channel-result-card" class="lg:col-span-2 bg-slate-800 text-white p-6 md:p-10 rounded-[2rem] shadow-lg border border-slate-700">
+                         <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 mr-4">
+                                <i data-lucide="megaphone" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-white text-lg uppercase tracking-widest">Rekomendasi Channel</h4>
+                                <p class="text-[10px] text-slate-400 font-bold">Analisis AI</p>
+                            </div>
+                        </div>
+                        <div id="channel-content" class="space-y-4"></div>
+                    </div>
                 </div>
+                <div id="save-button-container" class="text-center"></div>
             </div>
         `;
         
@@ -421,28 +434,44 @@ export class PersonaInsightComponent {
 
     async analyzePersona(job, segment, channel) {
         const btn = this.container.querySelector('#btn-analyze-persona');
-        const resultContainer = this.container.querySelector('#persona-result');
-        const contentContainer = this.container.querySelector('#persona-content');
+        const resultGrid = this.container.querySelector('#persona-result-grid');
+        const personaContent = this.container.querySelector('#persona-content');
+        const channelContent = this.container.querySelector('#channel-content');
         
         const originalText = btn.innerHTML;
         btn.innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 inline mr-1 animate-spin"></i> Menganalisa...`;
         btn.disabled = true;
+        resultGrid.classList.add('hidden');
         
         try {
-            const prompt = `Sebagai konsultan properti ahli, analisa Buyer Persona berdasarkan data dominan berikut: Pekerjaan=${job}, Segmen=${segment}, Media Masuk=${channel}. 
-            Berikan insight mendalam mengenai:
-            1. Psikologi & Pemicu Pembelian (Pain & Gain).
-            2. Gaya Komunikasi yang disukai.
-            3. Rekomendasi Strategi Closing.
-            Gunakan bahasa Indonesia yang profesional namun mudah dipahami sales. Format dengan poin-poin.`;
+            const prompt = `Sebagai konsultan properti ahli, analisa Buyer Persona berdasarkan data dominan berikut: Pekerjaan=${job}, Segmen=${segment}, Media Masuk=${channel}.
+
+Berikan output dalam format JSON tunggal yang bisa di-parse, dengan struktur: {"personaInsight": "...", "channelRecommendations": [...]}.
+
+1.  Untuk key "personaInsight" (string), berikan insight mendalam mengenai:
+    - Psikologi & Pemicu Pembelian (Pain & Gain).
+    - Gaya Komunikasi yang disukai.
+    - Rekomendasi Strategi Closing.
+    Format sebagai teks dengan poin-poin.
+
+2.  Untuk key "channelRecommendations" (array of objects), berikan 3 rekomendasi channel promosi paling efektif. Setiap object dalam array harus memiliki key:
+    - "channel" (string): Nama channel (e.g., 'Facebook Ads', 'Instagram Reels', 'TikTok').
+    - "reason" (string): 1 kalimat alasan singkat mengapa channel itu cocok.
+
+Contoh output:
+{"personaInsight": "1. Psikologi: ...\\n2. Gaya Komunikasi: ...", "channelRecommendations": [{"channel": "Facebook Ads", "reason": "Menjangkau demografi spesifik berdasarkan pekerjaan dan minat."}, ...]}
+`;
 
             const response = await ApiService.generateAIContent(prompt);
-            
-            this.displayResult(response.result, true);
+            let cleanJson = (response.result || '').replace(/```json|```/g, '').trim();
+            const data = JSON.parse(cleanJson);
+
+            this.displayResult(data, true);
             
         } catch (error) {
-            contentContainer.innerHTML = `<div class="text-red-500 font-bold">Analisa Gagal:</div><div class="text-xs mt-2">${error.message}</div>`;
-            resultContainer.classList.remove('hidden');
+            personaContent.innerHTML = `<div class="text-red-500 font-bold">Analisa Gagal:</div><div class="text-xs mt-2">${error.message}</div>`;
+            resultGrid.classList.remove('hidden');
+            resultGrid.style.display = 'grid';
         } finally {
             btn.innerHTML = originalText;
             btn.disabled = false;
@@ -450,29 +479,64 @@ export class PersonaInsightComponent {
         }
     }
 
-    displayResult(rawText, isNewResult) {
-        const resultContainer = this.container.querySelector('#persona-result');
-        const contentContainer = this.container.querySelector('#persona-content');
-        const saveButton = this.container.querySelector('#btn-save-persona');
+    displayResult(data, isNewResult) {
+        const resultGrid = this.container.querySelector('#persona-result-grid');
+        const personaContent = this.container.querySelector('#persona-content');
+        const channelContent = this.container.querySelector('#channel-content');
+        const saveButtonContainer = this.container.querySelector('#save-button-container');
 
-        this.lastAIResult = rawText; // Simpan hasil mentah
-        const formattedResult = String(rawText).replace(/\n/g, '<br>');
-        contentContainer.innerHTML = formattedResult;
-        resultContainer.classList.remove('hidden');
+        let insightText, channelData;
+
+        // Backward compatibility check
+        if (typeof data === 'string') {
+            try {
+                const parsedData = JSON.parse(data);
+                insightText = parsedData.personaInsight;
+                channelData = parsedData.channelRecommendations;
+                this.lastAIResult = parsedData;
+            } catch (e) {
+                insightText = data; // Data lama (plain text)
+                channelData = null;
+                this.lastAIResult = insightText;
+            }
+        } else { // Data baru (sudah object)
+            insightText = data.personaInsight;
+            channelData = data.channelRecommendations;
+            this.lastAIResult = data;
+        }
+
+        personaContent.innerHTML = String(insightText || 'Tidak ada data.').replace(/\n/g, '<br>');
+
+        if (channelData && Array.isArray(channelData)) {
+            this.container.querySelector('#channel-result-card').style.display = 'block';
+            channelContent.innerHTML = channelData.map(rec => `
+                <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-600">
+                    <p class="font-bold text-sm text-orange-400">${rec.channel}</p>
+                    <p class="text-xs text-slate-300 italic mt-1">"${rec.reason}"</p>
+                </div>
+            `).join('');
+        } else {
+            this.container.querySelector('#channel-result-card').style.display = 'none';
+        }
+
+        resultGrid.classList.remove('hidden');
+        resultGrid.style.display = 'grid';
 
         if (isNewResult) {
-            saveButton.classList.remove('hidden');
-            saveButton.style.display = 'inline-flex'; // Paksa tampil
+            saveButtonContainer.innerHTML = `<button id="btn-save-persona" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-black text-[9px] uppercase shadow-lg transition-all active:scale-95 inline-flex items-center">
+                <i data-lucide="save" class="w-3 h-3 inline mr-1.5"></i> Simpan Hasil Analisa Ini
+            </button>`;
+            const saveButton = this.container.querySelector('#btn-save-persona');
             saveButton.onclick = () => this.saveResult();
         } else {
-            saveButton.classList.add('hidden');
-            saveButton.style.display = 'none';
+            saveButtonContainer.innerHTML = '';
         }
         if(window.lucide) window.lucide.createIcons();
     }
 
-    async saveResult() {
+    async saveResult() { 
         const saveButton = this.container.querySelector('#btn-save-persona');
+        if (!saveButton) return;
         const originalContent = saveButton.innerHTML; // Simpan icon & text asli
         saveButton.innerText = 'Menyimpan...';
         saveButton.disabled = true;
@@ -482,7 +546,9 @@ export class PersonaInsightComponent {
         formData.append('user_id', this.state.currentUser.id); // FIX: Tambahkan User ID agar lolos validasi server
         
         // Encode AI text to Base64 to bypass WAF
-        const encodedInsight = btoa(unescape(encodeURIComponent(this.lastAIResult)));
+        // Simpan sebagai string JSON
+        const resultString = typeof this.lastAIResult === 'string' ? this.lastAIResult : JSON.stringify(this.lastAIResult);
+        const encodedInsight = btoa(unescape(encodeURIComponent(resultString)));
         formData.append('ai_persona_insight', encodedInsight);
 
         try {
@@ -493,7 +559,7 @@ export class PersonaInsightComponent {
             const result = await response.json();
             
             alert('Hasil analisa berhasil disimpan!');
-            saveButton.classList.add('hidden');
+            saveButton.parentElement.innerHTML = ''; // Hapus container tombol
             
             // Update state global agar Content Calendar langsung bisa baca
             if (!this.state.developerSettings) this.state.developerSettings = {};
