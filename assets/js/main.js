@@ -344,7 +344,7 @@ if (!loggedInUser) {
             tasksComponent.render();
         } else if (tabId === 'calendar') {
             mainContent.innerHTML = `<section id="tab-calendar" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;
-            calendarComponent = new CalendarComponent('tab-calendar');
+            calendarComponent = new CalendarComponent('tab-calendar', state);
             calendarComponent.render();
         } else if (tabId === 'validation') {
             mainContent.innerHTML = `<section id="tab-validation" class="h-full overflow-y-auto custom-scrollbar pb-10 animate-in"></section>`;

@@ -1,12 +1,32 @@
+import { ApiService } from '../api.js';
+
 export class CalendarComponent {
-    constructor(containerId) {
+    constructor(containerId, state) {
         this.container = document.getElementById(containerId);
+        this.state = state;
         this.currentDate = new Date();
+        this.tasks = [];
     }
 
-    render() {
+    async render() {
         if (!this.container) return;
+        
+        // Tampilkan loading state
+        this.container.innerHTML = `<div class="p-10 text-center"><i data-lucide="loader-2" class="w-8 h-8 animate-spin mx-auto text-slate-400"></i><p class="text-xs text-slate-400 mt-2 font-bold">Memuat jadwal...</p></div>`;
+        if (window.lucide) window.lucide.createIcons();
 
+        try {
+            // Ambil data tasks real dari server
+            this.tasks = await ApiService.get(`get_tasks.php?user_id=${this.state.currentUser.id}`);
+        } catch (error) {
+            console.error("Gagal memuat task untuk kalender:", error);
+            // Lanjut render kalender kosong jika gagal
+        }
+        
+        this.renderCalendar();
+    }
+
+    renderCalendar() {
         const year = this.currentDate.getFullYear();
         const month = this.currentDate.getMonth();
         
@@ -26,8 +46,8 @@ export class CalendarComponent {
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Jadwal Follow-up & Survey</p>
                     </div>
                     <div class="flex space-x-2">
-                        <button class="p-2 rounded-xl hover:bg-white hover:shadow-md transition-all text-slate-500"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <button class="p-2 rounded-xl hover:bg-white hover:shadow-md transition-all text-slate-500"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                        <button id="prev-month" class="p-2 rounded-xl hover:bg-white hover:shadow-md transition-all text-slate-500"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <button id="next-month" class="p-2 rounded-xl hover:bg-white hover:shadow-md transition-all text-slate-500"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                     </div>
                 </div>
                 
@@ -49,21 +69,27 @@ export class CalendarComponent {
         for (let day = 1; day <= daysInMonth; day++) {
             const isToday = day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
             
+            // Cari task untuk tanggal ini
+            // Format tanggal task di DB biasanya YYYY-MM-DD
+            const currentDayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dayTasks = this.tasks.filter(t => t.due_date === currentDayStr);
+
+            const taskHtml = dayTasks.map(task => {
+                const isCompleted = task.status === 'Completed';
+                const colorClass = isCompleted ? 'bg-slate-100 border-slate-200 text-slate-400 decoration-slate-400 line-through' : 'bg-blue-100 border-blue-200 text-blue-700 hover:bg-blue-200';
+                return `
+                    <div class="mt-1 p-1 px-1.5 border rounded-md cursor-pointer transition-colors ${colorClass}" title="${task.title}">
+                        <p class="text-[8px] font-black truncate">${task.title}</p>
+                    </div>
+                `;
+            }).join('');
+
             html += `
-                <div class="min-h-[100px] border-b border-r border-slate-100 p-2 relative group hover:bg-white transition-colors">
+                <div class="min-h-[100px] border-b border-r border-slate-100 p-1 md:p-2 relative group hover:bg-white transition-colors">
                     <span class="text-xs font-bold ${isToday ? 'bg-teal-600 text-white w-6 h-6 flex items-center justify-center rounded-full shadow-lg' : 'text-slate-500'}">${day}</span>
-                    
-                    <!-- Dummy Event (Contoh) -->
-                    ${day === 15 || day === 20 ? `
-                        <div class="mt-2 p-1.5 bg-orange-100 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-200 transition-colors">
-                            <p class="text-[8px] font-black text-orange-700 truncate">Follow Up Budi</p>
-                        </div>
-                    ` : ''}
-                     ${day === 28 ? `
-                        <div class="mt-2 p-1.5 bg-blue-100 border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-200 transition-colors">
-                            <p class="text-[8px] font-black text-blue-700 truncate">Survey Lokasi</p>
-                        </div>
-                    ` : ''}
+                    <div class="mt-1 space-y-0.5 overflow-y-auto max-h-[70px] custom-scrollbar">
+                        ${taskHtml}
+                    </div>
                 </div>
             `;
         }
@@ -74,6 +100,18 @@ export class CalendarComponent {
         `;
 
         this.container.innerHTML = html;
+        
+        // Event Listeners untuk Navigasi Bulan
+        this.container.querySelector('#prev-month').addEventListener('click', () => {
+            this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+            this.renderCalendar(); // Re-render dengan bulan baru (data task tetap sama)
+        });
+
+        this.container.querySelector('#next-month').addEventListener('click', () => {
+            this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+            this.renderCalendar();
+        });
+
         if (window.lucide) window.lucide.createIcons();
     }
 }
